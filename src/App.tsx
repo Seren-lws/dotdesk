@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react'
 import SideNav from './components/SideNav'
 import ProjectShowcase from './components/ProjectShowcase'
+import IdeaBook from './components/IdeaBook'
+import MiniCalendar from './components/MiniCalendar'
 import Bookmarks from './components/Bookmarks'
 
 const decoColors = [
@@ -42,7 +44,16 @@ export default function App() {
           </div>
         </header>
 
-        <ProjectShowcase />
+        <div className="two-col">
+          <div className="col-main">
+            <ProjectShowcase />
+          </div>
+          <div className="col-side">
+            <IdeaBook />
+            <MiniCalendar />
+          </div>
+        </div>
+
         <Bookmarks />
       </main>
     </div>

@@ -6,6 +6,8 @@ interface NavSection {
 
 const sections: NavSection[] = [
   { id: 'projects', icon: 'P', label: '项目橱窗' },
+  { id: 'ideas', icon: 'I', label: '灵感簿' },
+  { id: 'calendar', icon: 'C', label: '日历' },
   { id: 'bookmarks', icon: 'B', label: '收藏夹' },
 ]
 

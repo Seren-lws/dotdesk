@@ -385,8 +385,33 @@ body {
 .main-content {
   margin-left: var(--nav-width);
   flex: 1;
-  max-width: 820px;
+  max-width: 1100px;
   padding: 2rem 2.5rem 4rem;
+}
+
+/* Two-column layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+.col-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 2rem;
+}
+
+@media (max-width: 900px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .col-side {
+    position: static;
+  }
 }
 
 /* ===== Header ===== */
@@ -472,6 +497,163 @@ body {
   color: var(--bg-page);
   border-color: var(--text-primary);
   box-shadow: 2px 2px 0 var(--border-strong);
+}
+
+/* ===== Idea book ===== */
+.idea-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.idea-item {
+  padding: 10px 12px;
+  border: 2px solid var(--border-default);
+  background: var(--bg-card);
+  transition: transform 0.12s ease;
+}
+
+.idea-item:hover {
+  transform: translateX(2px);
+}
+
+.idea-title {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.idea-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.idea-tag {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  padding: 2px 6px;
+  border: 1.5px solid;
+}
+
+.idea-tag.sky { border-color: var(--color-sky-border); color: var(--color-sky-text); background: var(--color-sky-light); }
+.idea-tag.butter { border-color: var(--color-butter-border); color: var(--color-butter-text); background: var(--color-butter-light); }
+.idea-tag.lavender { border-color: var(--color-lavender-border); color: var(--color-lavender-text); background: var(--color-lavender-light); }
+.idea-tag.sage { border-color: var(--color-sage-border); color: var(--color-sage-text); background: var(--color-sage-light); }
+.idea-tag.peach { border-color: var(--color-peach-border); color: var(--color-peach-text); background: var(--color-peach-light); }
+.idea-tag.sand { border-color: var(--color-sand-border); color: var(--color-sand-text); background: var(--color-sand-light); }
+.idea-tag.rose { border-color: var(--color-rose-border); color: var(--color-rose-text); background: var(--color-rose-light); }
+.idea-tag.mint { border-color: var(--color-mint-border); color: var(--color-mint-text); background: var(--color-mint-light); }
+
+/* ===== Calendar ===== */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cal-header {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+.cal-cell {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  text-align: center;
+  padding: 6px 0;
+  border: 1.5px solid var(--border-default);
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  cursor: default;
+  transition: transform 0.1s ease;
+}
+
+.cal-cell.empty {
+  border-color: transparent;
+  background: transparent;
+}
+
+.cal-cell.has-entry {
+  cursor: pointer;
+  border-color: var(--border-strong);
+}
+
+.cal-cell.has-entry:hover {
+  transform: scale(1.15);
+  z-index: 2;
+  position: relative;
+}
+
+.cal-cell.today {
+  border-color: var(--text-primary);
+  border-width: 2px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cal-detail {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 2px solid var(--border-strong);
+  background: var(--bg-card);
+  box-shadow: 2px 2px 0 var(--border-default);
+}
+
+.cal-detail-date {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cal-detail-mood {
+  font-size: 10px;
+  font-weight: 400;
+  padding: 1px 6px;
+  border: 1.5px solid var(--color-sage-border);
+  background: var(--color-sage-light);
+  color: var(--color-sage-text);
+}
+
+.cal-detail-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.cal-legend {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.cal-legend-item {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cal-legend-dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--border-default);
+  display: inline-block;
 }
 
 /* ===== Scrollbar ===== */
