@@ -9,6 +9,9 @@ const sections: NavSection[] = [
   { id: 'ideas', icon: 'I', label: '灵感簿' },
   { id: 'calendar', icon: 'C', label: '日历' },
   { id: 'bookmarks', icon: 'B', label: '收藏夹' },
+  { id: 'job', icon: 'J', label: '转职之旅' },
+  { id: 'health', icon: 'H', label: '健康' },
+  { id: 'sleep', icon: 'S', label: '睡眠' },
 ]
 
 interface SideNavProps {

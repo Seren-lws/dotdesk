@@ -4,6 +4,9 @@ import ProjectShowcase from './components/ProjectShowcase'
 import IdeaBook from './components/IdeaBook'
 import MiniCalendar from './components/MiniCalendar'
 import Bookmarks from './components/Bookmarks'
+import JobOverview from './components/JobOverview'
+import HealthTracker from './components/HealthTracker'
+import SleepLog from './components/SleepLog'
 
 const decoColors = [
   'var(--color-rose-border)',
@@ -55,6 +58,17 @@ export default function App() {
         </div>
 
         <Bookmarks />
+
+        <JobOverview />
+
+        <div className="two-col health-sleep-row">
+          <div>
+            <HealthTracker />
+          </div>
+          <div>
+            <SleepLog />
+          </div>
+        </div>
       </main>
     </div>
   )

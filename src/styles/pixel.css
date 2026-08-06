@@ -735,6 +735,228 @@ body {
   display: inline-block;
 }
 
+/* ===== Job overview ===== */
+.job-card {
+  position: relative;
+}
+
+.job-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.job-stats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.job-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.job-stat-num {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-peach-text);
+}
+
+.job-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.job-link {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--color-peach-text);
+  text-decoration: none;
+  display: inline-block;
+  padding: 4px 0;
+  transition: transform 0.12s ease;
+}
+
+.job-link:hover {
+  text-decoration: underline;
+  transform: translateX(3px);
+}
+
+/* ===== Health tracker ===== */
+.health-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.health-box {
+  padding: 12px;
+  border: 2px solid var(--border-default);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.health-label {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.health-value {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.weight-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  margin-top: 8px;
+  height: 40px;
+}
+
+.weight-dot {
+  width: 6px;
+  border-radius: 0;
+}
+
+.exercise-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.exercise-dot {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--border-default);
+  display: inline-block;
+}
+
+/* ===== Sleep log ===== */
+.sleep-latest {
+  margin-bottom: 12px;
+}
+
+.sleep-latest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.sleep-nightmare {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--color-rose-text);
+  margin-top: 4px;
+}
+
+.sleep-summary {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.sleep-summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sleep-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  flex: 1;
+}
+
+.sleep-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.sleep-bar {
+  width: 100%;
+  max-width: 20px;
+  border-radius: 0;
+}
+
+.sleep-bar-label {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.sleep-time-row {
+  display: flex;
+  gap: 8px;
+}
+
+.sleep-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.sleep-quality-row {
+  display: flex;
+  gap: 4px;
+}
+
+.sleep-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.sleep-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-mint-border);
+}
+
+/* Health + Sleep side by side */
+.health-sleep-row {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 900px) {
+  .health-sleep-row {
+    grid-template-columns: 1fr;
+  }
+  .health-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .health-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ===== Scrollbar ===== */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-page); }
