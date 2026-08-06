@@ -3,6 +3,16 @@ import SideNav from './components/SideNav'
 import ProjectShowcase from './components/ProjectShowcase'
 import Bookmarks from './components/Bookmarks'
 
+const decoColors = [
+  'var(--color-rose-border)',
+  'var(--color-sky-border)',
+  'var(--color-sage-border)',
+  'var(--color-lavender-border)',
+  'var(--color-butter-border)',
+  'var(--color-mint-border)',
+  'var(--color-peach-border)',
+]
+
 export default function App() {
   const [activeSection, setActiveSection] = useState('projects')
 
@@ -19,10 +29,17 @@ export default function App() {
       <SideNav activeSection={activeSection} onNavigate={handleNavigate} />
       <main className="main-content">
         <header className="page-header">
-          <h1 className="page-title">
-            <span className="pixel-star" /> 晚声的点阵桌 <span className="pixel-star" />
-          </h1>
+          <h1 className="page-title">晚声的点阵桌</h1>
           <p className="page-subtitle">dotdesk</p>
+          <div className="header-deco">
+            {decoColors.map((c, i) => (
+              <span
+                key={i}
+                className="header-deco-dot"
+                style={{ background: c }}
+              />
+            ))}
+          </div>
         </header>
 
         <ProjectShowcase />

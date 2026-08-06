@@ -5,8 +5,8 @@ interface NavSection {
 }
 
 const sections: NavSection[] = [
-  { id: 'projects', icon: '📁', label: '项目橱窗' },
-  { id: 'bookmarks', icon: '🔖', label: '收藏夹' },
+  { id: 'projects', icon: 'P', label: '项目橱窗' },
+  { id: 'bookmarks', icon: 'B', label: '收藏夹' },
 ]
 
 interface SideNavProps {
@@ -17,6 +17,7 @@ interface SideNavProps {
 export default function SideNav({ activeSection, onNavigate }: SideNavProps) {
   return (
     <nav className="side-nav">
+      <div className="nav-logo">dotdesk</div>
       {sections.map((s) => (
         <button
           key={s.id}
@@ -24,7 +25,7 @@ export default function SideNav({ activeSection, onNavigate }: SideNavProps) {
           onClick={() => onNavigate(s.id)}
           aria-label={s.label}
         >
-          <span>{s.icon}</span>
+          {s.icon}
           <span className="nav-tooltip">{s.label}</span>
         </button>
       ))}

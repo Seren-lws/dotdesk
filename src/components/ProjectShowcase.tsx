@@ -29,7 +29,7 @@ export default function ProjectShowcase() {
     return (
       <section id="projects" className="section">
         <h2 className="section-title">
-          <span className="section-icon">📁</span>
+          <span className="section-icon" style={{ borderColor: 'var(--color-sky-border)', color: 'var(--color-sky-text)', background: 'var(--color-sky-light)' }}>P</span>
           项目橱窗
         </h2>
         <p className="card-desc">加载中...</p>
@@ -40,7 +40,7 @@ export default function ProjectShowcase() {
   return (
     <section id="projects" className="section">
       <h2 className="section-title">
-        <span className="section-icon">📁</span>
+        <span className="section-icon" style={{ borderColor: 'var(--color-sky-border)', color: 'var(--color-sky-text)', background: 'var(--color-sky-light)' }}>P</span>
         项目橱窗
       </h2>
       <div className="grid grid-3">
@@ -51,25 +51,25 @@ export default function ProjectShowcase() {
             <span className={`card-tag status-${p.status}`}>
               {statusLabels[p.status] || p.status}
             </span>
-            <div style={{ display: 'flex', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '8px', flexWrap: 'wrap' }}>
               {p.url && (
                 <a
-                  className="card-link"
+                  className="card-link card-title"
                   href={p.url}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  🔗 访问
+                  {'>'} 访问
                 </a>
               )}
               {p.repo_url && (
                 <a
-                  className="card-link"
+                  className="card-link card-title"
                   href={p.repo_url}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  📦 仓库
+                  {'>'} 仓库
                 </a>
               )}
             </div>

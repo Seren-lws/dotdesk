@@ -43,7 +43,7 @@ export default function Bookmarks() {
     return (
       <section id="bookmarks" className="section">
         <h2 className="section-title">
-          <span className="section-icon">🔖</span>
+          <span className="section-icon" style={{ borderColor: 'var(--color-rose-border)', color: 'var(--color-rose-text)', background: 'var(--color-rose-light)' }}>B</span>
           收藏夹
         </h2>
         <p className="card-desc">加载中...</p>
@@ -54,7 +54,7 @@ export default function Bookmarks() {
   return (
     <section id="bookmarks" className="section">
       <h2 className="section-title">
-        <span className="section-icon">🔖</span>
+        <span className="section-icon" style={{ borderColor: 'var(--color-rose-border)', color: 'var(--color-rose-text)', background: 'var(--color-rose-light)' }}>B</span>
         收藏夹
       </h2>
 
