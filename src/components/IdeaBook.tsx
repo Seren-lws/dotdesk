@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
 interface Idea {
@@ -20,8 +20,13 @@ const tagColors: Record<string, string> = {
 export default function IdeaBook() {
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [activeTag, setActiveTag] = useState('全部')
+  const [showForm, setShowForm] = useState(false)
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
+  const [tagInput, setTagInput] = useState('')
+  const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
+  const fetchIdeas = useCallback(() => {
     supabase
       .from('dd_ideas')
       .select('*')
@@ -29,12 +34,34 @@ export default function IdeaBook() {
       .then(({ data }) => setIdeas(data || []))
   }, [])
 
+  useEffect(() => { fetchIdeas() }, [fetchIdeas])
+
   const allTags = ['全部', ...new Set(ideas.flatMap((i) => i.tags))]
 
   const filtered =
     activeTag === '全部'
       ? ideas
       : ideas.filter((i) => i.tags.includes(activeTag))
+
+  const handleSubmit = async () => {
+    if (!title.trim()) return
+    setSaving(true)
+    const tags = tagInput
+      .split(/[,，、\s]+/)
+      .map((t) => t.trim())
+      .filter(Boolean)
+    await supabase.from('dd_ideas').insert({
+      title: title.trim(),
+      content: content.trim() || null,
+      tags,
+    })
+    setTitle('')
+    setContent('')
+    setTagInput('')
+    setShowForm(false)
+    setSaving(false)
+    fetchIdeas()
+  }
 
   return (
     <section id="ideas" className="section">
@@ -50,7 +77,45 @@ export default function IdeaBook() {
           I
         </span>
         灵感簿
+        <button
+          className="add-btn"
+          onClick={() => setShowForm(!showForm)}
+          aria-label="添加灵感"
+        >
+          {showForm ? '×' : '+'}
+        </button>
       </h2>
+
+      {showForm && (
+        <div className="idea-form">
+          <input
+            className="idea-input"
+            placeholder="灵感标题"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <textarea
+            className="idea-textarea"
+            placeholder="详细描述（可选）"
+            rows={2}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+          <input
+            className="idea-input"
+            placeholder="标签，用逗号分隔（如：AI, evering）"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+          />
+          <button
+            className="idea-submit"
+            onClick={handleSubmit}
+            disabled={saving || !title.trim()}
+          >
+            {saving ? '保存中...' : '记下来'}
+          </button>
+        </div>
+      )}
 
       <div className="filter-bar">
         {allTags.map((tag) => (

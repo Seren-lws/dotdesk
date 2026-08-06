@@ -385,15 +385,14 @@ body {
 .main-content {
   margin-left: var(--nav-width);
   flex: 1;
-  max-width: 1100px;
   padding: 2rem 2.5rem 4rem;
 }
 
 /* Two-column layout */
 .two-col {
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 20px;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
   align-items: start;
 }
 
@@ -497,6 +496,86 @@ body {
   color: var(--bg-page);
   border-color: var(--text-primary);
   box-shadow: 2px 2px 0 var(--border-strong);
+}
+
+/* ===== Add button ===== */
+.add-btn {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-strong);
+  background: var(--bg-card);
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  line-height: 1;
+}
+
+.add-btn:hover {
+  background: var(--text-primary);
+  color: var(--bg-page);
+  border-color: var(--text-primary);
+}
+
+/* ===== Idea form ===== */
+.idea-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 2px dashed var(--color-lavender-border);
+  background: var(--color-lavender-light);
+}
+
+.idea-input,
+.idea-textarea {
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 2px solid var(--border-default);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  outline: none;
+  resize: none;
+}
+
+.idea-input:focus,
+.idea-textarea:focus {
+  border-color: var(--color-lavender-border);
+}
+
+.idea-input::placeholder,
+.idea-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.idea-submit {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  padding: 6px 14px;
+  border: 2px solid var(--color-lavender-border);
+  background: var(--color-lavender-bg);
+  color: var(--color-lavender-text);
+  cursor: pointer;
+  align-self: flex-end;
+  transition: all 0.12s ease;
+  box-shadow: 2px 2px 0 var(--color-lavender-border);
+}
+
+.idea-submit:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--color-lavender-border);
+}
+
+.idea-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ===== Idea book ===== */
