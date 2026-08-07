@@ -385,6 +385,125 @@ body {
   box-shadow: 3px 3px 0 var(--border-default);
 }
 
+.bookmark-icon {
+  border-color: var(--color-rose-border);
+  color: var(--color-rose-text);
+  background: var(--color-rose-light);
+}
+
+.bookmark-form {
+  padding: 12px;
+  margin-bottom: 14px;
+  border: 2px dashed var(--color-rose-border);
+  background: var(--color-rose-light);
+}
+
+.bookmark-form-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.4fr 0.8fr;
+  gap: 8px;
+}
+
+.bookmark-submit {
+  margin-top: 8px;
+  border-color: var(--color-rose-border);
+  background: var(--color-rose-bg);
+  color: var(--color-rose-text);
+  box-shadow: 2px 2px 0 var(--color-rose-border);
+}
+
+.bookmark-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bookmark-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.bookmark-entry .pixel-pill small {
+  padding-left: 6px;
+  border-left: 1px solid currentColor;
+  font-family: var(--font-body);
+  font-size: 9px;
+  opacity: 0.65;
+}
+
+.bookmark-menu {
+  position: relative;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.bookmark-entry:hover .bookmark-menu,
+.bookmark-entry:focus-within .bookmark-menu,
+.bookmark-menu[open] {
+  opacity: 1;
+}
+
+.bookmark-menu summary {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  border: 0;
+  color: var(--text-muted);
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.bookmark-menu summary::-webkit-details-marker { display: none; }
+
+.bookmark-menu summary:hover,
+.bookmark-menu[open] summary {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.bookmark-actions {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 3px);
+  right: 0;
+  display: flex;
+  gap: 8px;
+  min-width: max-content;
+  padding: 6px 8px;
+  border: 2px solid var(--border-default);
+  background: var(--bg-card);
+  box-shadow: 2px 2px 0 var(--border-default);
+}
+
+.bookmark-actions button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.bookmark-actions button:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .bookmark-form-grid { grid-template-columns: 1fr; }
+  .bookmark-entry { width: 100%; }
+  .bookmark-entry .pixel-pill { flex: 1; }
+}
+
+@media (hover: none) {
+  .bookmark-menu { opacity: 1; }
+}
+
 .pixel-pill.cat-tools {
   border-color: var(--color-lavender-border);
   color: var(--color-lavender-text);
@@ -1276,56 +1395,164 @@ body {
 }
 
 /* ===== Job overview ===== */
-.job-card {
+.job-section {
   position: relative;
+  padding: 16px 18px 18px;
+  border: 3px solid var(--color-peach-border);
+  background-color: #f2f0e8;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 23px, rgba(126, 138, 117, 0.035) 24px 25px);
+  box-shadow: 4px 4px 0 var(--color-peach-border);
 }
 
-.job-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+.job-section::before,
+.job-section::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--color-peach-border);
 }
 
-.job-stats {
-  display: flex;
-  gap: 24px;
-  margin-bottom: 14px;
+.job-section::before { top: 7px; left: 7px; }
+.job-section::after { right: 7px; bottom: 7px; }
+
+.job-icon {
+  border-color: var(--color-peach-border);
+  color: var(--color-peach-text);
+  background: var(--color-peach-light);
 }
 
-.job-stat {
+.job-title {
+  position: relative;
+  padding-top: 52px;
+  border-bottom-color: var(--color-peach-border);
+}
+
+.job-title .section-title-link {
+  position: relative;
+  z-index: 3;
+  margin-right: 0;
+}
+
+.job-title-cat {
+  position: absolute;
+  z-index: 2;
+  right: 112px;
+  bottom: -3px;
+  width: 172px;
+  height: auto;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.section-title-link {
+  margin-left: auto;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.section-title-link:hover {
+  color: var(--color-peach-text);
+  text-decoration: underline;
+}
+
+.job-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.job-overview-stat,
+.job-week-card,
+.job-diary-card {
+  border: 2px solid var(--color-peach-border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  text-decoration: none;
+  box-shadow: 1px 1px 0 var(--color-peach-border);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.job-overview-stat:hover,
+.job-week-card:hover,
+.job-diary-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--color-peach-border);
+}
+
+.job-overview-stat {
+  min-height: 92px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
-.job-stat-num {
+.job-overview-stat strong,
+.job-week-card strong {
   font-family: var(--font-pixel);
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--color-peach-text);
 }
 
-.job-stat-label {
+.job-overview-stat span,
+.job-week-card > span,
+.job-diary-card > span {
   font-size: 12px;
   color: var(--text-secondary);
-  margin-top: 2px;
 }
 
-.job-link {
-  font-family: var(--font-pixel);
+.job-overview-bottom {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.75fr) minmax(0, 1.8fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.job-week-card,
+.job-diary-card {
+  min-height: 96px;
+  padding: 15px 16px;
+}
+
+.job-week-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.job-week-card small {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.job-diary-card p {
+  margin-top: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.job-overview-note {
+  margin-top: 10px;
+  color: var(--text-muted);
   font-size: 11px;
-  color: var(--color-peach-text);
-  text-decoration: none;
-  display: inline-block;
-  padding: 4px 0;
-  transition: transform 0.12s ease;
 }
 
-.job-link:hover {
-  text-decoration: underline;
-  transform: translateX(3px);
+@media (max-width: 700px) {
+  .job-section { padding: 13px; }
+  .job-title { padding-top: 34px; }
+  .job-title .section-title-link { display: none; }
+  .job-title-cat { right: 0; width: 112px; }
+  .job-overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .job-overview-bottom { grid-template-columns: 1fr; }
 }
 
 /* ===== Health tracker ===== */

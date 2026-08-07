@@ -25,7 +25,7 @@ export interface Bookmark {
   id: string
   name: string
   url: string
-  category: 'tools' | 'design' | 'ai' | 'docs' | 'other'
+  category: string
   icon: string | null
   sort_order: number
 }
