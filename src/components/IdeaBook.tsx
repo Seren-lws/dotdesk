@@ -97,7 +97,7 @@ export default function IdeaBook() {
   }
 
   return (
-    <section id="ideas" className="section">
+    <section id="ideas" className="section idea-board">
       <h2 className="section-title">
         <span
           className="section-icon"
@@ -118,6 +118,14 @@ export default function IdeaBook() {
           {showForm ? '×' : '+'}
         </button>
       </h2>
+
+      <div className="chalk-stickers" aria-hidden="true">
+        <span className="chalk-spark">✦</span>
+        <span className="chalk-heart">♡</span>
+        <span className="chalk-piece chalk-piece-pink" />
+        <span className="chalk-piece chalk-piece-blue" />
+        <span className="chalk-piece chalk-piece-yellow" />
+      </div>
 
       {showForm && (
         <div className="idea-form">

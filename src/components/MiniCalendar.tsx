@@ -23,6 +23,17 @@ const moodLabels: Record<string, string> = {
   bad: '低落',
 }
 
+type Mood = NonNullable<CalendarEntry['mood']>
+
+function PixelMood({ mood }: { mood: Mood }) {
+  return (
+    <span className={`pixel-mood pixel-mood-${mood}`} aria-hidden="true">
+      <span className="pixel-mood-eyes" />
+      <span className="pixel-mood-mouth" />
+    </span>
+  )
+}
+
 const weekDays = ['一', '二', '三', '四', '五', '六', '日']
 
 export default function MiniCalendar() {
@@ -113,7 +124,7 @@ export default function MiniCalendar() {
   }
 
   return (
-    <section id="calendar" className="section">
+    <section id="calendar" className="section calendar-panel">
       <h2 className="section-title calendar-title">
         <span className="section-icon calendar-icon">C</span>
         {monthName}
@@ -139,9 +150,10 @@ export default function MiniCalendar() {
               onClick={() => handleSelectDay(dateStr, entry)}
               onMouseEnter={() => entry && setHoveredDay(entry)}
               onMouseLeave={() => setHoveredDay(null)}
-              aria-label={`${dateStr}${entry ? ' 有记录' : ''}`}
+              aria-label={`${dateStr}${entry ? ` ${entry.mood ? moodLabels[entry.mood] : ''} 有记录` : ''}`}
             >
-              {day}
+              <span className="cal-day-number">{day}</span>
+              {entry?.mood && <PixelMood mood={entry.mood} />}
             </button>
           )
         })}
@@ -153,7 +165,7 @@ export default function MiniCalendar() {
           <div className="sleep-quality-row">
             {(Object.keys(moodLabels) as Array<NonNullable<CalendarEntry['mood']>>).map((item) => (
               <button type="button" key={item} className={`filter-btn ${mood === item ? 'active' : ''}`} onClick={() => setMood(item)}>
-                {moodLabels[item]}
+                <PixelMood mood={item} /> {moodLabels[item]}
               </button>
             ))}
           </div>
@@ -167,21 +179,26 @@ export default function MiniCalendar() {
           </div>
           {message && <p className="form-error">{message}</p>}
         </div>
-      ) : hoveredDay ? (
-        <div className="cal-detail">
-          <p className="cal-detail-date">
-            {hoveredDay.date.slice(5).replace('-', '/')}
-            {hoveredDay.mood && <span className="cal-detail-mood">{moodLabels[hoveredDay.mood]}</span>}
-          </p>
-          {hoveredDay.content && <p className="card-desc">{hoveredDay.content}</p>}
-          {hoveredDay.notes && <p className="cal-detail-note">{hoveredDay.notes}</p>}
+      ) : (
+        <div className="cal-detail-slot">
+          {hoveredDay && (
+            <div className="cal-detail">
+              <p className="cal-detail-date">
+                {hoveredDay.date.slice(5).replace('-', '/')}
+                {hoveredDay.mood && <span className="cal-detail-mood"><PixelMood mood={hoveredDay.mood} /> {moodLabels[hoveredDay.mood]}</span>}
+              </p>
+              {hoveredDay.content && <p className="card-desc">{hoveredDay.content}</p>}
+              {hoveredDay.notes && <p className="cal-detail-note">{hoveredDay.notes}</p>}
+            </div>
+          )}
+          {!hoveredDay && <p className="cal-detail-hint">移到有心情的日期上看看 · 点击日期可以记录</p>}
         </div>
-      ) : null}
+      )}
 
       {!selectedDate && message && <p className="form-error">{message}</p>}
       <div className="cal-legend">
         {(Object.keys(moodLabels) as Array<NonNullable<CalendarEntry['mood']>>).map((item) => (
-          <span key={item} className="cal-legend-item"><span className="cal-legend-dot" style={{ background: moodColors[item] }} /> {moodLabels[item]}</span>
+          <span key={item} className="cal-legend-item"><PixelMood mood={item} /> {moodLabels[item]}</span>
         ))}
       </div>
     </section>
