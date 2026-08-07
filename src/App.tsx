@@ -9,16 +9,6 @@ import HealthTracker from './components/HealthTracker'
 import SleepLog from './components/SleepLog'
 import BillingTracker from './components/BillingTracker'
 
-const decoColors = [
-  'var(--color-rose-border)',
-  'var(--color-sky-border)',
-  'var(--color-sage-border)',
-  'var(--color-lavender-border)',
-  'var(--color-butter-border)',
-  'var(--color-mint-border)',
-  'var(--color-peach-border)',
-]
-
 export default function App() {
   const [activeSection, setActiveSection] = useState('projects')
 
@@ -34,17 +24,13 @@ export default function App() {
     <div className="app-layout">
       <SideNav activeSection={activeSection} onNavigate={handleNavigate} />
       <main className="main-content">
-        <header className="page-header">
-          <h1 className="page-title">晚声的点阵桌</h1>
-          <p className="page-subtitle">dotdesk</p>
-          <div className="header-deco">
-            {decoColors.map((c, i) => (
-              <span
-                key={i}
-                className="header-deco-dot"
-                style={{ background: c }}
-              />
-            ))}
+        <header className="hero-banner">
+          <div className="desk-sign">
+            <h1>DOTDESK</h1>
+            <p>晚声的私人工作台</p>
+          </div>
+          <div className="hero-banner-frame">
+            <img src="/dotdesk-cats-banner.gif" alt="水边像素工坊里休息的两只黑猫" />
           </div>
         </header>
 
