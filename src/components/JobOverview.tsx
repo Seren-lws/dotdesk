@@ -37,7 +37,7 @@ export default function JobOverview() {
 
         <a
           className="job-link"
-          href="https://career-ship.vercel.app"
+          href="https://tenshoku-fune.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -9,6 +9,18 @@ export interface Project {
   sort_order: number
 }
 
+export interface GitHubCommit {
+  sha: string
+  message: string
+  committed_at: string
+  url: string
+}
+
+export interface GitHubRepositoryActivity {
+  repo: string
+  commits: GitHubCommit[]
+}
+
 export interface Bookmark {
   id: string
   name: string

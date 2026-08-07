@@ -184,6 +184,123 @@ body {
   text-decoration: underline;
 }
 
+/* ===== Project activity ===== */
+.project-card {
+  position: relative;
+}
+
+.project-card:has(.activity-hint) {
+  cursor: pointer;
+}
+
+.activity-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.activity-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-sage-border);
+  box-shadow: 1px 1px 0 var(--color-sage-text);
+}
+
+.commit-popover {
+  position: absolute;
+  z-index: 20;
+  left: 12px;
+  right: 12px;
+  top: calc(100% - 5px);
+  display: none;
+  padding: 11px 12px;
+  border: 3px solid var(--border-strong);
+  background: var(--bg-card);
+  box-shadow: 4px 4px 0 var(--border-strong);
+  cursor: default;
+}
+
+.project-card:hover,
+.project-card:focus-within {
+  z-index: 10;
+}
+
+.project-card:hover .commit-popover,
+.project-card:focus-within .commit-popover,
+.project-card.activity-expanded .commit-popover {
+  display: block;
+}
+
+.commit-popover-title {
+  margin-bottom: 7px;
+  color: var(--text-muted);
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+
+.commit-list {
+  list-style: none;
+}
+
+.commit-list li + li {
+  border-top: 1px dashed var(--border-default);
+}
+
+.commit-list a {
+  display: block;
+  padding: 7px 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.commit-list a:hover .commit-message {
+  text-decoration: underline;
+}
+
+.commit-message,
+.commit-meta {
+  display: block;
+}
+
+.commit-message {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 12px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.commit-meta {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-family: var(--font-pixel);
+  font-size: 8px;
+}
+
+@media (hover: none) {
+  .project-card:hover .commit-popover,
+  .project-card:focus-within .commit-popover {
+    display: none;
+  }
+
+  .project-card.activity-expanded .commit-popover {
+    position: static;
+    display: block;
+    margin-top: 10px;
+    box-shadow: 3px 3px 0 var(--border-strong);
+  }
+}
+
 /* Status badges */
 .status-deployed {
   background: var(--color-sage-bg);
