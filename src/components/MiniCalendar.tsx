@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 interface CalendarEntry {
@@ -28,91 +28,161 @@ const weekDays = ['一', '二', '三', '四', '五', '六', '日']
 export default function MiniCalendar() {
   const [entries, setEntries] = useState<CalendarEntry[]>([])
   const [hoveredDay, setHoveredDay] = useState<CalendarEntry | null>(null)
+  const [viewDate, setViewDate] = useState(() => new Date())
+  const [selectedDate, setSelectedDate] = useState('')
+  const [content, setContent] = useState('')
+  const [mood, setMood] = useState<CalendarEntry['mood']>('good')
+  const [notes, setNotes] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState('')
 
   const now = new Date()
-  const year = now.getFullYear()
-  const month = now.getMonth()
+  const year = viewDate.getFullYear()
+  const month = viewDate.getMonth()
   const monthName = `${year}年${month + 1}月`
-
   const firstDay = new Date(year, month, 1)
   let startWeekday = firstDay.getDay() - 1
   if (startWeekday < 0) startWeekday = 6
   const daysInMonth = new Date(year, month + 1, 0).getDate()
 
-  useEffect(() => {
+  const fetchEntries = useCallback(async () => {
     const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`
     const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${daysInMonth}`
-    supabase
+    const { data, error } = await supabase
       .from('dd_calendar')
       .select('*')
       .gte('date', startDate)
       .lte('date', endDate)
-      .then(({ data }) => setEntries(data || []))
+    if (error) setMessage('日历加载失败，请刷新后再试。')
+    else setEntries(data || [])
   }, [year, month, daysInMonth])
 
-  const entryMap = new Map(entries.map((e) => [e.date, e]))
+  useEffect(() => { fetchEntries() }, [fetchEntries])
 
+  const entryMap = new Map(entries.map((entry) => [entry.date, entry]))
+  const selectedEntry = selectedDate ? entryMap.get(selectedDate) : undefined
   const cells: (number | null)[] = []
   for (let i = 0; i < startWeekday; i++) cells.push(null)
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
 
+  const handleSelectDay = (date: string, entry?: CalendarEntry) => {
+    setSelectedDate(date)
+    setContent(entry?.content || '')
+    setMood(entry?.mood || 'good')
+    setNotes(entry?.notes || '')
+    setMessage('')
+  }
+
+  const handleSave = async () => {
+    if (!selectedDate) return
+    setSaving(true)
+    setMessage('')
+    const values = {
+      date: selectedDate,
+      content: content.trim() || null,
+      mood,
+      notes: notes.trim() || null,
+    }
+    const { error } = selectedEntry
+      ? await supabase.from('dd_calendar').update(values).eq('id', selectedEntry.id)
+      : await supabase.from('dd_calendar').insert(values)
+    if (error) {
+      setMessage('保存失败，请稍后再试。刚才填写的内容还在。')
+      setSaving(false)
+      return
+    }
+    setSaving(false)
+    setSelectedDate('')
+    fetchEntries()
+  }
+
+  const handleDelete = async () => {
+    if (!selectedEntry || !window.confirm(`确定删除 ${selectedEntry.date} 的记录吗？`)) return
+    const { error } = await supabase.from('dd_calendar').delete().eq('id', selectedEntry.id)
+    if (error) setMessage('删除失败，请稍后再试。')
+    else {
+      setSelectedDate('')
+      fetchEntries()
+    }
+  }
+
+  const changeMonth = (offset: number) => {
+    setViewDate(new Date(year, month + offset, 1))
+    setSelectedDate('')
+    setHoveredDay(null)
+  }
+
   return (
     <section id="calendar" className="section">
-      <h2 className="section-title">
-        <span
-          className="section-icon"
-          style={{
-            borderColor: 'var(--color-sand-border)',
-            color: 'var(--color-sand-text)',
-            background: 'var(--color-sand-light)',
-          }}
-        >
-          C
-        </span>
+      <h2 className="section-title calendar-title">
+        <span className="section-icon calendar-icon">C</span>
         {monthName}
+        <span className="calendar-nav">
+          <button type="button" onClick={() => changeMonth(-1)} aria-label="上个月">‹</button>
+          <button type="button" onClick={() => changeMonth(1)} aria-label="下个月">›</button>
+        </span>
       </h2>
 
       <div className="cal-grid">
-        {weekDays.map((d) => (
-          <div key={d} className="cal-header">{d}</div>
-        ))}
-        {cells.map((day, i) => {
-          if (day === null) return <div key={`empty-${i}`} className="cal-cell empty" />
+        {weekDays.map((day) => <div key={day} className="cal-header">{day}</div>)}
+        {cells.map((day, index) => {
+          if (day === null) return <div key={`empty-${index}`} className="cal-cell empty" />
           const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
           const entry = entryMap.get(dateStr)
-          const isToday = day === now.getDate()
+          const isToday = day === now.getDate() && month === now.getMonth() && year === now.getFullYear()
           return (
-            <div
+            <button
+              type="button"
               key={day}
               className={`cal-cell ${entry ? 'has-entry' : ''} ${isToday ? 'today' : ''}`}
               style={entry?.mood ? { background: moodColors[entry.mood] } : undefined}
+              onClick={() => handleSelectDay(dateStr, entry)}
               onMouseEnter={() => entry && setHoveredDay(entry)}
               onMouseLeave={() => setHoveredDay(null)}
+              aria-label={`${dateStr}${entry ? ' 有记录' : ''}`}
             >
               {day}
-            </div>
+            </button>
           )
         })}
       </div>
 
-      {hoveredDay && (
+      {selectedDate ? (
+        <div className="calendar-editor">
+          <p className="cal-detail-date">{selectedDate.slice(5).replace('-', '/')} {selectedEntry ? '编辑记录' : '新记录'}</p>
+          <div className="sleep-quality-row">
+            {(Object.keys(moodLabels) as Array<NonNullable<CalendarEntry['mood']>>).map((item) => (
+              <button type="button" key={item} className={`filter-btn ${mood === item ? 'active' : ''}`} onClick={() => setMood(item)}>
+                {moodLabels[item]}
+              </button>
+            ))}
+          </div>
+          <input className="idea-input" placeholder="今天发生了什么？" value={content} onChange={(event) => setContent(event.target.value)} />
+          <input className="idea-input" placeholder="备注（可选）" value={notes} onChange={(event) => setNotes(event.target.value)} />
+          <div className="record-form-actions">
+            {selectedEntry && <button type="button" className="record-delete-btn" onClick={handleDelete}>删除</button>}
+            <button type="button" className="idea-submit calendar-save" onClick={handleSave} disabled={saving}>
+              {saving ? '保存中...' : '保存'}
+            </button>
+          </div>
+          {message && <p className="form-error">{message}</p>}
+        </div>
+      ) : hoveredDay ? (
         <div className="cal-detail">
           <p className="cal-detail-date">
             {hoveredDay.date.slice(5).replace('-', '/')}
-            {hoveredDay.mood && (
-              <span className="cal-detail-mood">{moodLabels[hoveredDay.mood]}</span>
-            )}
+            {hoveredDay.mood && <span className="cal-detail-mood">{moodLabels[hoveredDay.mood]}</span>}
           </p>
           {hoveredDay.content && <p className="card-desc">{hoveredDay.content}</p>}
           {hoveredDay.notes && <p className="cal-detail-note">{hoveredDay.notes}</p>}
         </div>
-      )}
+      ) : null}
 
+      {!selectedDate && message && <p className="form-error">{message}</p>}
       <div className="cal-legend">
-        <span className="cal-legend-item"><span className="cal-legend-dot" style={{ background: moodColors.great }} /> 超棒</span>
-        <span className="cal-legend-item"><span className="cal-legend-dot" style={{ background: moodColors.good }} /> 不错</span>
-        <span className="cal-legend-item"><span className="cal-legend-dot" style={{ background: moodColors.ok }} /> 一般</span>
-        <span className="cal-legend-item"><span className="cal-legend-dot" style={{ background: moodColors.bad }} /> 低落</span>
+        {(Object.keys(moodLabels) as Array<NonNullable<CalendarEntry['mood']>>).map((item) => (
+          <span key={item} className="cal-legend-item"><span className="cal-legend-dot" style={{ background: moodColors[item] }} /> {moodLabels[item]}</span>
+        ))}
       </div>
     </section>
   )

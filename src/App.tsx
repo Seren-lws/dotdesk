@@ -7,6 +7,7 @@ import Bookmarks from './components/Bookmarks'
 import JobOverview from './components/JobOverview'
 import HealthTracker from './components/HealthTracker'
 import SleepLog from './components/SleepLog'
+import BillingTracker from './components/BillingTracker'
 
 const decoColors = [
   'var(--color-rose-border)',
@@ -69,6 +70,8 @@ export default function App() {
             <SleepLog />
           </div>
         </div>
+
+        <BillingTracker />
       </main>
     </div>
   )

@@ -578,6 +578,89 @@ body {
   cursor: not-allowed;
 }
 
+.form-error {
+  font-size: 12px;
+  color: var(--color-rose-text);
+  margin-top: 4px;
+}
+
+.record-title-row,
+.record-form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.record-title-row .idea-title {
+  margin-bottom: 0;
+}
+
+.record-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.record-actions button,
+.record-delete-btn {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.record-actions button:hover,
+.record-delete-btn:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.record-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px;
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-card);
+  font-size: 11px;
+}
+
+.record-row > div:first-child {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.record-row strong {
+  font-family: var(--font-pixel);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.record-row span {
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.record-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
 /* ===== Idea book ===== */
 .idea-list {
   display: flex;
@@ -652,6 +735,8 @@ body {
   background: var(--bg-card);
   cursor: default;
   transition: transform 0.1s ease;
+  width: 100%;
+  line-height: normal;
 }
 
 .cal-cell.empty {
@@ -735,6 +820,46 @@ body {
   display: inline-block;
 }
 
+.calendar-icon {
+  border-color: var(--color-sand-border);
+  color: var(--color-sand-text);
+  background: var(--color-sand-light);
+}
+
+.calendar-nav {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.calendar-nav button {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-default);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.calendar-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 2px dashed var(--color-sand-border);
+  background: var(--color-sand-light);
+}
+
+.calendar-save {
+  border-color: var(--color-sand-border);
+  background: var(--color-sand-bg);
+  color: var(--color-sand-text);
+  box-shadow: 2px 2px 0 var(--color-sand-border);
+}
+
 /* ===== Job overview ===== */
 .job-card {
   position: relative;
@@ -793,6 +918,24 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+}
+
+.health-icon {
+  border-color: var(--color-rose-border);
+  color: var(--color-rose-text);
+  background: var(--color-rose-light);
+}
+
+.health-form {
+  border-color: var(--color-rose-border);
+  background: var(--color-rose-light);
+}
+
+.health-submit {
+  border-color: var(--color-rose-border);
+  background: var(--color-rose-bg);
+  color: var(--color-rose-text);
+  box-shadow: 2px 2px 0 var(--color-rose-border);
 }
 
 .health-box {
@@ -937,6 +1080,154 @@ body {
   accent-color: var(--color-mint-border);
 }
 
+.sleep-icon {
+  border-color: var(--color-mint-border);
+  color: var(--color-mint-text);
+  background: var(--color-mint-light);
+}
+
+.sleep-form {
+  border-color: var(--color-mint-border);
+  background: var(--color-mint-light);
+}
+
+.sleep-submit {
+  border-color: var(--color-mint-border);
+  background: var(--color-mint-bg);
+  color: var(--color-mint-text);
+  box-shadow: 2px 2px 0 var(--color-mint-border);
+}
+
+/* ===== Subscription billing ===== */
+.billing-icon {
+  border-color: var(--color-butter-border);
+  color: var(--color-butter-text);
+  background: var(--color-butter-light);
+}
+
+.billing-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.billing-summary-card {
+  padding: 14px;
+  border: 2px solid var(--color-butter-border);
+  background: var(--color-butter-light);
+  box-shadow: 2px 2px 0 var(--color-butter-border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.billing-summary-card strong,
+.billing-item-side strong {
+  font-family: var(--font-pixel);
+  color: var(--color-butter-text);
+}
+
+.billing-form {
+  border-color: var(--color-butter-border);
+  background: var(--color-butter-light);
+}
+
+.billing-type-row {
+  display: flex;
+  gap: 6px;
+}
+
+.billing-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.billing-submit {
+  border-color: var(--color-butter-border);
+  background: var(--color-butter-bg);
+  color: var(--color-butter-text);
+  box-shadow: 2px 2px 0 var(--color-butter-border);
+}
+
+.billing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.billing-item {
+  padding: 12px 14px;
+  border: 2px solid var(--border-default);
+  background: var(--bg-card);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.billing-item-main {
+  min-width: 0;
+}
+
+.billing-item-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.billing-item-title-row .card-title {
+  margin-bottom: 0;
+}
+
+.billing-item-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.billing-status {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.billing-status.active { color: var(--color-sage-text); }
+.billing-status.cancelled { color: var(--color-rose-text); }
+
+.billing-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.billing-actions button {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.billing-actions button:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .billing-form-grid { grid-template-columns: 1fr; }
+  .billing-item { align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .billing-summary { grid-template-columns: 1fr; }
+  .billing-item { flex-direction: column; }
+  .billing-item-side { align-items: flex-start; }
+}
+
 /* Health + Sleep side by side */
 .health-sleep-row {
   grid-template-columns: 1fr 1fr;
@@ -953,6 +1244,9 @@ body {
 
 @media (max-width: 640px) {
   .health-grid {
+    grid-template-columns: 1fr;
+  }
+  .record-form-grid {
     grid-template-columns: 1fr;
   }
 }

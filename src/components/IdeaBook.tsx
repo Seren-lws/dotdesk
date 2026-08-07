@@ -25,6 +25,8 @@ export default function IdeaBook() {
   const [content, setContent] = useState('')
   const [tagInput, setTagInput] = useState('')
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const fetchIdeas = useCallback(() => {
     supabase
@@ -46,21 +48,52 @@ export default function IdeaBook() {
   const handleSubmit = async () => {
     if (!title.trim()) return
     setSaving(true)
+    setSaveError('')
     const tags = tagInput
       .split(/[,，、\s]+/)
       .map((t) => t.trim())
       .filter(Boolean)
-    await supabase.from('dd_ideas').insert({
+    const values = {
       title: title.trim(),
       content: content.trim() || null,
       tags,
-    })
+    }
+    const { error } = editingId
+      ? await supabase.from('dd_ideas').update(values).eq('id', editingId)
+      : await supabase.from('dd_ideas').insert(values)
+    if (error) {
+      setSaveError('保存失败，请稍后再试。刚才填写的内容还在。')
+      setSaving(false)
+      return
+    }
+    resetForm()
+    setSaving(false)
+    fetchIdeas()
+  }
+
+  const resetForm = () => {
     setTitle('')
     setContent('')
     setTagInput('')
+    setEditingId(null)
     setShowForm(false)
-    setSaving(false)
-    fetchIdeas()
+    setSaveError('')
+  }
+
+  const handleEdit = (idea: Idea) => {
+    setTitle(idea.title)
+    setContent(idea.content || '')
+    setTagInput(idea.tags.join(', '))
+    setEditingId(idea.id)
+    setShowForm(true)
+    setSaveError('')
+  }
+
+  const handleDelete = async (idea: Idea) => {
+    if (!window.confirm(`确定删除“${idea.title}”吗？`)) return
+    const { error } = await supabase.from('dd_ideas').delete().eq('id', idea.id)
+    if (error) setSaveError('删除失败，请稍后再试。')
+    else fetchIdeas()
   }
 
   return (
@@ -79,7 +112,7 @@ export default function IdeaBook() {
         灵感簿
         <button
           className="add-btn"
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => showForm ? resetForm() : setShowForm(true)}
           aria-label="添加灵感"
         >
           {showForm ? '×' : '+'}
@@ -112,8 +145,9 @@ export default function IdeaBook() {
             onClick={handleSubmit}
             disabled={saving || !title.trim()}
           >
-            {saving ? '保存中...' : '记下来'}
+            {saving ? '保存中...' : editingId ? '保存修改' : '记下来'}
           </button>
+          {saveError && <p className="form-error">{saveError}</p>}
         </div>
       )}
 
@@ -132,7 +166,13 @@ export default function IdeaBook() {
       <div className="idea-list">
         {filtered.map((idea) => (
           <div key={idea.id} className="idea-item">
-            <p className="idea-title">{idea.title}</p>
+            <div className="record-title-row">
+              <p className="idea-title">{idea.title}</p>
+              <div className="record-actions">
+                <button type="button" onClick={() => handleEdit(idea)}>编辑</button>
+                <button type="button" onClick={() => handleDelete(idea)}>删除</button>
+              </div>
+            </div>
             {idea.content && <p className="card-desc">{idea.content}</p>}
             <div className="idea-tags">
               {idea.tags.map((t) => (
