@@ -116,8 +116,10 @@ export default function Bookmarks() {
   }
 
   return (
-    <section id="bookmarks" className="section">
-      <h2 className="section-title">
+    <section id="bookmarks" className="section bookmark-panel">
+      <span className="bookmark-binding" aria-hidden="true" />
+      <span className="bookmark-decoration" aria-hidden="true">✦ · ♣ · ✎</span>
+      <h2 className="section-title bookmark-title">
         <span className="section-icon bookmark-icon">B</span>
         收藏夹
         <button className="add-btn" onClick={() => showForm ? resetForm() : setShowForm(true)} aria-label="添加收藏">
@@ -152,8 +154,8 @@ export default function Bookmarks() {
         {filtered.map((bookmark) => (
           <div key={bookmark.id} className="bookmark-entry">
             <a className={`pixel-pill cat-${categoryColor(bookmark.category)}`} href={bookmark.url} target="_blank" rel="noopener noreferrer">
-              {bookmark.icon && <span>{getIconEmoji(bookmark.icon)}</span>}
-              {bookmark.name}
+              {bookmark.icon && <span className="bookmark-note-icon">{getIconEmoji(bookmark.icon)}</span>}
+              <span className="bookmark-note-name">{bookmark.name}</span>
               <small>{categoryLabel(bookmark.category)}</small>
             </a>
             <details className="bookmark-menu">

@@ -125,6 +125,7 @@ export default function MiniCalendar() {
 
   return (
     <section id="calendar" className="section calendar-panel">
+      <span className="calendar-rings" aria-hidden="true" />
       <h2 className="section-title calendar-title">
         <span className="section-icon calendar-icon">C</span>
         {monthName}
@@ -134,7 +135,8 @@ export default function MiniCalendar() {
         </span>
       </h2>
 
-      <div className="cal-grid">
+      <div className="calendar-sheet">
+        <div className="cal-grid">
         {weekDays.map((day) => <div key={day} className="cal-header">{day}</div>)}
         {cells.map((day, index) => {
           if (day === null) return <div key={`empty-${index}`} className="cal-cell empty" />
@@ -157,7 +159,7 @@ export default function MiniCalendar() {
             </button>
           )
         })}
-      </div>
+        </div>
 
       {selectedDate ? (
         <div className="calendar-editor">
@@ -200,6 +202,8 @@ export default function MiniCalendar() {
         {(Object.keys(moodLabels) as Array<NonNullable<CalendarEntry['mood']>>).map((item) => (
           <span key={item} className="cal-legend-item"><PixelMood mood={item} /> {moodLabels[item]}</span>
         ))}
+      </div>
+        <span className="calendar-perforation" aria-hidden="true" />
       </div>
     </section>
   )

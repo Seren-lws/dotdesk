@@ -33,6 +33,8 @@ export default function JobOverview() {
 
   return (
     <section id="job" className="section job-section">
+      <span className="job-signal-lights" aria-hidden="true" />
+      <span className="job-hull-code" aria-hidden="true">FUNE · 07</span>
       <h2 className="section-title job-title">
         <span className="section-icon job-icon">J</span>
         转职之船
@@ -68,6 +70,7 @@ export default function JobOverview() {
 
       {!summary && !error && <p className="job-overview-note">正在从转职之船取回航行记录…</p>}
       {error && <p className="job-overview-note">暂时没取到总览，点击卡片仍可前往转职之船。</p>}
+      <span className="job-hull-base" aria-hidden="true" />
     </section>
   )
 }
