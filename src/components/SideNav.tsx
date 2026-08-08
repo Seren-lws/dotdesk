@@ -12,6 +12,7 @@ const sections: NavSection[] = [
   { id: 'job', icon: 'J', label: '转职之旅' },
   { id: 'health', icon: 'H', label: '健康' },
   { id: 'sleep', icon: 'S', label: '睡眠' },
+  { id: 'novels', icon: 'N', label: '小说成绩' },
   { id: 'billing', icon: '¥', label: '订阅账单' },
 ]
 

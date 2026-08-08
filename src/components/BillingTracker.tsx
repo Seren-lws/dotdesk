@@ -188,6 +188,12 @@ export default function BillingTracker() {
         </button>
       </h2>
 
+      <div className="billing-receipt-meta" aria-hidden="true">
+        <span>DOTDESK RECEIPT</span>
+        <span>NO. 0007</span>
+        <span>PRIVATE LEDGER</span>
+      </div>
+
       <div className="billing-summary">
         <div className="billing-summary-card billing-total-card">
           <span className="health-label">本月已支出 · 约</span>
@@ -259,6 +265,12 @@ export default function BillingTracker() {
           })}
         </div>
       )}
+
+      <div className="billing-receipt-footer" aria-hidden="true">
+        <span>·· THANK YOU ··</span>
+        <b>已记录</b>
+        <span>DOTDESK / PERSONAL COPY</span>
+      </div>
     </section>
   )
 }

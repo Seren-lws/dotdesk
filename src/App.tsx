@@ -7,6 +7,7 @@ import Bookmarks from './components/Bookmarks'
 import JobOverview from './components/JobOverview'
 import HealthTracker from './components/HealthTracker'
 import SleepLog from './components/SleepLog'
+import NovelPerformance from './components/NovelPerformance'
 import BillingTracker from './components/BillingTracker'
 
 export default function App() {
@@ -56,6 +57,8 @@ export default function App() {
             <SleepLog />
           </div>
         </div>
+
+        <NovelPerformance />
 
         <BillingTracker />
 
