@@ -58,6 +58,17 @@ export default function App() {
         </div>
 
         <BillingTracker />
+
+        <footer className="closing-banner">
+          <div className="closing-sign">
+            <strong>DOTDESK</strong>
+            <span>今天也辛苦啦 · 明天见</span>
+          </div>
+          <img
+            src="/dotdesk-footer.gif"
+            alt="雨天窗边的像素植物花园"
+          />
+        </footer>
       </main>
     </div>
   )

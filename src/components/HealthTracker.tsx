@@ -46,8 +46,16 @@ export default function HealthTracker() {
   useEffect(() => { fetchEntries() }, [fetchEntries])
 
   const latest = entries[0]
-  const weights = [...entries].reverse().filter((entry) => entry.weight)
+  const weights = [...entries].reverse().filter((entry) => entry.weight != null)
   const exerciseDays = entries.filter((entry) => entry.exercise)
+  const latestWeight = weights[weights.length - 1]
+  const oldestWeight = weights[0]
+  const weightValues = weights.map((entry) => Number(entry.weight))
+  const weightMin = weightValues.length ? Math.min(...weightValues) : 0
+  const weightMax = weightValues.length ? Math.max(...weightValues) : 0
+  const weightDelta = latestWeight && oldestWeight && latestWeight.id !== oldestWeight.id
+    ? Number(latestWeight.weight) - Number(oldestWeight.weight)
+    : null
 
   const resetForm = () => {
     setEditingId(null)
@@ -118,10 +126,13 @@ export default function HealthTracker() {
   }
 
   return (
-    <section id="health" className="section">
-      <h2 className="section-title">
+    <section id="health" className="section module-panel health-section">
+      <img className="health-gardener" src="/health-gardener.png" alt="抱着植物的像素园丁" />
+      <span className="health-roof-decor" aria-hidden="true">✦ · ♣ · +</span>
+      <h2 className="section-title health-title">
         <span className="section-icon health-icon">H</span>
         健康
+        <span className="module-kicker">BODY GARDEN</span>
         <button className="add-btn" onClick={() => showForm ? resetForm() : openNewForm()} aria-label="新增健康记录">
           {showForm ? '×' : '+'}
         </button>
@@ -150,19 +161,24 @@ export default function HealthTracker() {
       )}
 
       <div className="health-grid">
-        <div className="health-box">
-          <p className="health-label">体重</p>
-          <p className="health-value">{latest?.weight ? `${latest.weight} kg` : '--'}</p>
-          {weights.length > 1 && <div className="weight-bar">{weights.map((entry) => <div key={entry.id} className="weight-dot" title={`${entry.date.slice(5)}: ${entry.weight}kg`} style={{ height: `${Math.max(8, ((entry.weight! - 48) / 8) * 40)}px`, background: 'var(--color-rose-border)' }} />)}</div>}
+        <div className="health-box health-weight-box">
+          <div className="health-box-heading"><p className="health-label">7日体重</p>{weightDelta != null && <span className={`health-change ${weightDelta > 0 ? 'up' : weightDelta < 0 ? 'down' : ''}`}>{weightDelta === 0 ? '持平' : `${weightDelta > 0 ? '+' : ''}${weightDelta.toFixed(1)} kg`}</span>}</div>
+          <p className="health-value">{latestWeight?.weight != null ? `${latestWeight.weight} kg` : '--'}</p>
+          {weights.length > 1 && <div className="weight-bar">{weights.map((entry) => {
+            const range = Math.max(weightMax - weightMin, 0.4)
+            const height = 12 + ((Number(entry.weight) - weightMin) / range) * 28
+            return <div key={entry.id} className="weight-column"><div className="weight-dot" title={`${entry.date.slice(5)}: ${entry.weight}kg`} style={{ height: `${height}px` }} /><span>{entry.date.slice(8)}</span></div>
+          })}</div>}
         </div>
-        <div className="health-box">
-          <p className="health-label">经期</p>
-          {latest?.period_phase ? <><p className="health-value">Day {latest.period_day || '--'}</p><span className={`idea-tag ${phaseColors[latest.period_phase]}`}>{phaseLabels[latest.period_phase]}</span></> : <p className="health-value">--</p>}
+        <div className="health-box health-cycle-box">
+          <p className="health-label">身体周期</p>
+          {latest?.period_phase ? <><span className="cycle-moon" aria-hidden="true">◐</span><p className="health-value">DAY {latest.period_day || '--'}</p><span className={`idea-tag ${phaseColors[latest.period_phase]}`}>{phaseLabels[latest.period_phase]}</span></> : <><span className="cycle-moon empty" aria-hidden="true">○</span><p className="health-value">--</p></>}
         </div>
-        <div className="health-box">
-          <p className="health-label">本周运动</p>
-          <div className="exercise-dots">{entries.map((entry) => <span key={entry.id} className="exercise-dot" title={entry.exercise || '没动'} style={{ background: entry.exercise ? 'var(--color-sage-border)' : 'var(--border-default)' }} />)}</div>
-          <p className="card-desc" style={{ marginTop: '4px' }}>{exerciseDays.length}/{entries.length} 天</p>
+        <div className="health-box health-exercise-box">
+          <p className="health-label">7日活动</p>
+          <p className="health-value">{exerciseDays.length}<small> / {entries.length || 7} 天</small></p>
+          <div className="exercise-dots">{[...entries].reverse().map((entry) => <span key={entry.id} className={`exercise-dot ${entry.exercise ? 'active' : ''}`} title={entry.exercise || '休息'}>{entry.exercise ? '♣' : '·'}</span>)}</div>
+          <p className="health-mini-note">{exerciseDays[0]?.exercise || '今天也可以好好休息'}</p>
         </div>
       </div>
 
@@ -171,16 +187,17 @@ export default function HealthTracker() {
           <div key={entry.id} className="record-row">
             <div>
               <strong>{entry.date.slice(5)}</strong>
-              <span>{entry.weight ? `${entry.weight}kg` : '未记体重'}{entry.exercise ? ` · ${entry.exercise}` : ''}</span>
+              <span>{entry.weight ? `${entry.weight}kg` : '未记体重'}{entry.exercise ? ` · ${entry.exercise}` : ''}{entry.notes ? ` · ${entry.notes}` : ''}</span>
             </div>
-            <div className="record-actions">
-              <button type="button" onClick={() => handleEdit(entry)}>编辑</button>
-              <button type="button" onClick={() => handleDelete(entry)}>删除</button>
-            </div>
+            <RecordMenu onEdit={() => handleEdit(entry)} onDelete={() => handleDelete(entry)} />
           </div>
         ))}
       </div>
       {!showForm && saveError && <p className="form-error">{saveError}</p>}
     </section>
   )
+}
+
+function RecordMenu({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
+  return <details className="record-menu"><summary aria-label="管理记录">···</summary><div className="record-menu-actions"><button type="button" onClick={onEdit}>编辑</button><button type="button" onClick={onDelete}>删除</button></div></details>
 }

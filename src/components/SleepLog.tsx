@@ -15,6 +15,7 @@ interface SleepEntry {
 
 const qualityLabels: Record<string, string> = { great: '超棒', good: '不错', ok: '一般', bad: '很差' }
 const qualityColors: Record<string, string> = { great: 'sage', good: 'sky', ok: 'butter', bad: 'rose' }
+const qualityFaces: Record<string, string> = { great: '^‿^', good: '˘‿˘', ok: '–‿–', bad: ';﹏;' }
 
 export default function SleepLog() {
   const [entries, setEntries] = useState<SleepEntry[]>([])
@@ -118,10 +119,11 @@ export default function SleepLog() {
   }
 
   return (
-    <section id="sleep" className="section">
-      <h2 className="section-title">
+    <section id="sleep" className="section module-panel sleep-section">
+      <h2 className="section-title sleep-title">
         <span className="section-icon sleep-icon">S</span>
         睡眠
+        <span className="module-kicker">NIGHT WINDOW</span>
         <button className="add-btn" onClick={() => showForm ? resetForm() : openNewForm()} aria-label="新增睡眠记录">{showForm ? '×' : '+'}</button>
       </h2>
 
@@ -145,39 +147,49 @@ export default function SleepLog() {
       )}
 
       {latest && (
-        <div className="sleep-latest pixel-card mint">
-          <div className="sleep-latest-header">
-            <div><p className="card-title">最近记录 · {latest.date.slice(5)}</p><p className="card-desc">{latest.sleep_time} - {latest.wake_time}（{latest.hours}h）</p></div>
-            {latest.quality && <span className={`idea-tag ${qualityColors[latest.quality]}`}>{qualityLabels[latest.quality]}</span>}
+        <div className="sleep-latest">
+          <span className="sleep-moon" aria-hidden="true">☾</span>
+          <div className="sleep-latest-copy">
+            <p className="health-label">昨夜航程 · {latest.date.slice(5)}</p>
+            <p className="sleep-hours">{latest.hours}<small> h</small></p>
+            <p className="sleep-time-line"><span>{latest.sleep_time}</span><i>·····→</i><span>{latest.wake_time}</span></p>
           </div>
+          {latest.quality && <div className={`sleep-face ${qualityColors[latest.quality]}`}><span>{qualityFaces[latest.quality]}</span><small>{qualityLabels[latest.quality]}</small></div>}
           {latest.had_nightmare && <p className="sleep-nightmare">做了噩梦</p>}
           {latest.notes && <p className="cal-detail-note">{latest.notes}</p>}
         </div>
       )}
 
       <div className="sleep-summary">
-        <div className="sleep-summary-item"><span className="health-label">7日均</span><span className="health-value">{avgHours}h</span></div>
-        <div className="sleep-bars">
-          {[...entries].reverse().map((entry) => (
-            <div key={entry.id} className="sleep-bar-col" title={`${entry.date.slice(5)}: ${entry.hours}h`}>
-              <div className="sleep-bar" style={{ height: `${Math.max(4, ((entry.hours || 0) / 10) * 50)}px`, background: `var(--color-${qualityColors[entry.quality || 'ok']}-border)` }} />
-              <span className="sleep-bar-label">{entry.date.slice(8)}</span>
-            </div>
-          ))}
+        <div className="sleep-summary-item"><span className="health-label">7日平均</span><span className="health-value">{avgHours}<small>h</small></span><span className="summary-caption">理想线 8h</span></div>
+        <div className="sleep-chart">
+          <span className="sleep-goal-line">8h</span>
+          <div className="sleep-bars">
+            {[...entries].reverse().map((entry) => (
+              <div key={entry.id} className="sleep-bar-col" title={`${entry.date.slice(5)}: ${entry.hours}h`}>
+                <div className="sleep-bar" style={{ height: `${Math.max(4, ((entry.hours || 0) / 10) * 62)}px`, background: `var(--color-${qualityColors[entry.quality || 'ok']}-border)` }} />
+                <span className="sleep-bar-label">{entry.date.slice(8)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="record-list">
         {entries.map((entry) => (
           <div key={entry.id} className="record-row">
-            <div><strong>{entry.date.slice(5)}</strong><span>{entry.sleep_time}–{entry.wake_time} · {entry.hours}h</span></div>
-            <div className="record-actions"><button type="button" onClick={() => handleEdit(entry)}>编辑</button><button type="button" onClick={() => handleDelete(entry)}>删除</button></div>
+            <div><strong>{entry.date.slice(5)}</strong><span>{qualityFaces[entry.quality || 'ok']} · {entry.sleep_time}–{entry.wake_time} · {entry.hours}h{entry.had_nightmare ? ' · 噩梦' : ''}</span></div>
+            <RecordMenu onEdit={() => handleEdit(entry)} onDelete={() => handleDelete(entry)} />
           </div>
         ))}
       </div>
       {!showForm && saveError && <p className="form-error">{saveError}</p>}
     </section>
   )
+}
+
+function RecordMenu({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
+  return <details className="record-menu"><summary aria-label="管理记录">···</summary><div className="record-menu-actions"><button type="button" onClick={onEdit}>编辑</button><button type="button" onClick={onDelete}>删除</button></div></details>
 }
 
 function calcHours(sleep: string, wake: string): number {
