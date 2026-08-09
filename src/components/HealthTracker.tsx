@@ -78,7 +78,7 @@ export default function HealthTracker() {
     }
   }
 
-  const handleEdit = (entry: HealthEntry) => {
+  const fillForm = (entry: HealthEntry) => {
     setEditingId(entry.id)
     setRecordDate(entry.date)
     setWeight(entry.weight == null ? '' : String(entry.weight))
@@ -86,7 +86,26 @@ export default function HealthTracker() {
     setPeriodDay(entry.period_day == null ? '' : String(entry.period_day))
     setPeriodPhase(entry.period_phase || '')
     setNotes(entry.notes || '')
+  }
+
+  const handleEdit = (entry: HealthEntry) => {
+    fillForm(entry)
     setShowForm(true)
+    setSaveError('')
+  }
+
+  const handleDateChange = (nextDate: string) => {
+    const targetEntry = entries.find((entry) => entry.date === nextDate)
+    if (targetEntry) fillForm(targetEntry)
+    else {
+      setEditingId(null)
+      setRecordDate(nextDate)
+      setWeight('')
+      setExercise('')
+      setPeriodDay('')
+      setPeriodPhase('')
+      setNotes('')
+    }
     setSaveError('')
   }
 
@@ -101,9 +120,28 @@ export default function HealthTracker() {
       period_phase: periodPhase || null,
       notes: notes.trim() || null,
     }
-    const existing = editingId ? entries.find((entry) => entry.id === editingId) : entries.find((entry) => entry.date === recordDate)
-    const { error } = existing
-      ? await supabase.from('dd_health').update(values).eq('id', existing.id)
+    const editingEntry = editingId ? entries.find((entry) => entry.id === editingId) : null
+    let existingId = editingEntry?.date === recordDate
+      ? editingEntry.id
+      : entries.find((entry) => entry.date === recordDate)?.id
+
+    if (!existingId) {
+      const { data, error: lookupError } = await supabase
+        .from('dd_health')
+        .select('id')
+        .eq('date', recordDate)
+        .limit(1)
+        .maybeSingle()
+      if (lookupError) {
+        setSaveError('保存前检查日期失败，请稍后再试。刚才填写的内容还在。')
+        setSaving(false)
+        return
+      }
+      existingId = data?.id
+    }
+
+    const { error } = existingId
+      ? await supabase.from('dd_health').update(values).eq('id', existingId)
       : await supabase.from('dd_health').insert(values)
     if (error) {
       setSaveError('保存失败，请稍后再试。刚才填写的内容还在。')
@@ -141,7 +179,7 @@ export default function HealthTracker() {
       {showForm && (
         <div className="idea-form health-form">
           <div className="record-form-grid">
-            <label className="sleep-label">日期<input className="idea-input" type="date" value={recordDate} onChange={(event) => setRecordDate(event.target.value)} /></label>
+            <label className="sleep-label">日期<input className="idea-input" type="date" value={recordDate} onChange={(event) => handleDateChange(event.target.value)} /></label>
             <label className="sleep-label">体重（kg）<input className="idea-input" type="number" step="0.1" value={weight} onChange={(event) => setWeight(event.target.value)} /></label>
             <label className="sleep-label">周期第几天<input className="idea-input" type="number" min="1" placeholder="可选" value={periodDay} onChange={(event) => setPeriodDay(event.target.value)} /></label>
             <label className="sleep-label">周期阶段

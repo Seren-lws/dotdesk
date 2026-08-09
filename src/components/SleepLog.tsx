@@ -69,7 +69,7 @@ export default function SleepLog() {
     }
   }
 
-  const handleEdit = (entry: SleepEntry) => {
+  const fillForm = (entry: SleepEntry) => {
     setEditingId(entry.id)
     setRecordDate(entry.date)
     setSleepTime(entry.sleep_time || '')
@@ -77,7 +77,26 @@ export default function SleepLog() {
     setQuality(entry.quality || 'good')
     setNightmare(entry.had_nightmare)
     setNotes(entry.notes || '')
+  }
+
+  const handleEdit = (entry: SleepEntry) => {
+    fillForm(entry)
     setShowForm(true)
+    setSaveError('')
+  }
+
+  const handleDateChange = (nextDate: string) => {
+    const targetEntry = entries.find((entry) => entry.date === nextDate)
+    if (targetEntry) fillForm(targetEntry)
+    else {
+      setEditingId(null)
+      setRecordDate(nextDate)
+      setSleepTime('')
+      setWakeTime('')
+      setQuality('good')
+      setNightmare(false)
+      setNotes('')
+    }
     setSaveError('')
   }
 
@@ -94,9 +113,28 @@ export default function SleepLog() {
       had_nightmare: nightmare,
       notes: notes.trim() || null,
     }
-    const existing = editingId ? entries.find((entry) => entry.id === editingId) : entries.find((entry) => entry.date === recordDate)
-    const { error } = existing
-      ? await supabase.from('dd_sleep').update(values).eq('id', existing.id)
+    const editingEntry = editingId ? entries.find((entry) => entry.id === editingId) : null
+    let existingId = editingEntry?.date === recordDate
+      ? editingEntry.id
+      : entries.find((entry) => entry.date === recordDate)?.id
+
+    if (!existingId) {
+      const { data, error: lookupError } = await supabase
+        .from('dd_sleep')
+        .select('id')
+        .eq('date', recordDate)
+        .limit(1)
+        .maybeSingle()
+      if (lookupError) {
+        setSaveError('保存前检查日期失败，请稍后再试。刚才填写的内容还在。')
+        setSaving(false)
+        return
+      }
+      existingId = data?.id
+    }
+
+    const { error } = existingId
+      ? await supabase.from('dd_sleep').update(values).eq('id', existingId)
       : await supabase.from('dd_sleep').insert(values)
     if (error) {
       setSaveError('保存失败，请稍后再试。刚才填写的内容还在。')
@@ -129,7 +167,7 @@ export default function SleepLog() {
 
       {showForm && (
         <div className="idea-form sleep-form">
-          <label className="sleep-label">日期<input className="idea-input" type="date" value={recordDate} onChange={(event) => setRecordDate(event.target.value)} /></label>
+          <label className="sleep-label">日期<input className="idea-input" type="date" value={recordDate} onChange={(event) => handleDateChange(event.target.value)} /></label>
           <div className="sleep-time-row">
             <label className="sleep-label">入睡<input className="idea-input" type="time" value={sleepTime} onChange={(event) => setSleepTime(event.target.value)} /></label>
             <label className="sleep-label">起床<input className="idea-input" type="time" value={wakeTime} onChange={(event) => setWakeTime(event.target.value)} /></label>
