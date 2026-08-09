@@ -111,6 +111,23 @@ export default function BillingTracker() {
     return { monthSpent, recurring, nextDue }
   }, [entries, rates])
 
+  const monthlyOverview = useMemo(() => {
+    const today = new Date(`${getLocalDateString()}T12:00:00`)
+    const months = Array.from({ length: 6 }, (_, index) => {
+      const date = new Date(today.getFullYear(), today.getMonth() - 5 + index, 1)
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+      return { key, label: `${String(date.getFullYear()).slice(2)}.${String(date.getMonth() + 1).padStart(2, '0')}` }
+    })
+    const spentByMonth = entries.reduce<Record<string, number>>((totalsByMonth, entry) => {
+      const month = entry.paid_date.slice(0, 7)
+      totalsByMonth[month] = (totalsByMonth[month] || 0) + Number(entry.amount) * rates.jpy[entry.currency || 'CNY']
+      return totalsByMonth
+    }, {})
+    const overview = months.map((month) => ({ ...month, amount: spentByMonth[month.key] || 0 }))
+    const highest = Math.max(...overview.map((month) => month.amount), 1)
+    return overview.map((month) => ({ ...month, height: month.amount ? Math.max(12, (month.amount / highest) * 100) : 4 }))
+  }, [entries, rates])
+
   const resetForm = () => {
     setForm({ ...emptyForm, paidDate: getLocalDateString() })
     setEditingId(null)
@@ -215,6 +232,22 @@ export default function BillingTracker() {
       <p className="exchange-note">
         汇率参考 {rates.date === '参考值' ? '最近值' : rates.date.slice(5)} · 1 CNY ≈ ¥{rates.jpy.CNY.toFixed(2)} · 1 USD ≈ ¥{rates.jpy.USD.toFixed(2)}
       </p>
+
+      <details className="billing-monthly-overview">
+        <summary className="billing-monthly-heading">
+          <div><span>MONTHLY TOTALS</span><strong>近 6 个月支出</strong></div>
+          <small><i>按付款 / 充值日期统计 · 已换算日元</i><b aria-hidden="true" /></small>
+        </summary>
+        <div className="billing-monthly-chart">
+          {monthlyOverview.map((month, index) => (
+            <div key={month.key} className={`billing-month-column ${index === monthlyOverview.length - 1 ? 'current' : ''}`} title={`${month.key} 支出 ${formatJpy(month.amount)}`}>
+              <span>{formatJpy(month.amount)}</span>
+              <div className="billing-month-bar"><i style={{ height: `${month.height}%` }} /></div>
+              <b>{month.label}</b>
+            </div>
+          ))}
+        </div>
+      </details>
 
       {showForm && (
         <div className="idea-form billing-form">

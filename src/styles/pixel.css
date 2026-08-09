@@ -2582,6 +2582,33 @@ body {
 .billing-summary-card strong, .billing-item-side strong { font-family: var(--font-pixel); color: var(--color-butter-text); }
 .billing-summary-card strong { font-size: 19px; }
 .exchange-note { margin: 0 0 13px; padding: 0 3px 10px; border-bottom: 2px dashed #b9ad89; color: var(--text-muted); font-size: 9px; text-align: right; }
+.billing-monthly-overview {
+  margin: 0 0 17px;
+  padding: 12px 14px 10px;
+  border: 1.5px solid #b4a985;
+  background: rgba(255, 253, 244, .52);
+  box-shadow: inset 0 -3px 0 rgba(193, 181, 143, .18);
+}
+.billing-monthly-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 0; list-style: none; cursor: pointer; }
+.billing-monthly-heading::-webkit-details-marker { display: none; }
+.billing-monthly-overview[open] .billing-monthly-heading { margin-bottom: 11px; }
+.billing-monthly-heading > div { display: flex; align-items: baseline; gap: 9px; }
+.billing-monthly-heading span { color: #aaa07f; font-family: var(--font-pixel); font-size: 6px; letter-spacing: .08em; }
+.billing-monthly-heading strong { color: #625c48; font-size: 12px; font-weight: 500; }
+.billing-monthly-heading small { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 8px; }
+.billing-monthly-heading small i { font-style: normal; }
+.billing-monthly-heading small b { padding: 3px 6px; border: 1px solid #b4a985; color: #746b50; font-family: var(--font-pixel); font-size: 0; font-weight: 400; }
+.billing-monthly-heading small b::after { content: '展开看看 ▼'; font-size: 7px; }
+.billing-monthly-overview[open] .billing-monthly-heading small b::after { content: '收起来 ▲'; }
+.billing-monthly-chart { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; align-items: end; }
+.billing-month-column { min-width: 0; display: grid; grid-template-rows: 15px 48px auto; gap: 4px; text-align: center; }
+.billing-month-column > span { overflow: hidden; color: #7b735b; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.billing-month-column > b { color: #948a6d; font-family: var(--font-pixel); font-size: 7px; font-weight: 400; }
+.billing-month-bar { position: relative; overflow: hidden; border-bottom: 1.5px solid #b7ac89; background: repeating-linear-gradient(0deg, rgba(190, 178, 140, .13) 0 1px, transparent 1px 8px); }
+.billing-month-bar i { position: absolute; right: 24%; bottom: 0; left: 24%; min-height: 2px; background: #c3b994; box-shadow: inset 2px 0 rgba(255,255,255,.25); }
+.billing-month-column.current > span { color: #625941; font-weight: 600; }
+.billing-month-column.current > b { color: #71684d; }
+.billing-month-column.current .billing-month-bar i { background: #a99d74; }
 .billing-form { border: 1.5px dashed #a99d79; background: rgba(255,253,245,.82); box-shadow: none; }
 .billing-type-row { display: flex; gap: 6px; }
 .billing-form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
@@ -2646,6 +2673,7 @@ body {
   .billing-form-grid { grid-template-columns: 1fr; }
   .billing-summary { grid-template-columns: 1fr 1fr; }
   .billing-total-card { grid-column: 1 / -1; }
+  .billing-monthly-heading { align-items: flex-start; flex-direction: column; gap: 3px; }
   .billing-item { align-items: flex-start; }
 }
 
@@ -2655,6 +2683,11 @@ body {
   .billing-total-card { grid-column: auto; }
   .billing-summary-card { border-right: 0; border-bottom: 1px dashed #bdb18d; }
   .billing-summary-card:last-child { border-bottom: 0; }
+  .billing-monthly-overview { padding-right: 8px; padding-left: 8px; }
+  .billing-monthly-chart { gap: 3px; }
+  .billing-month-column { grid-template-rows: 14px 42px auto; }
+  .billing-month-column > span { font-size: 7px; }
+  .billing-month-bar i { right: 19%; left: 19%; }
   .billing-item { flex-direction: column; }
   .billing-item-side { width: 100%; align-items: flex-start; }
   .billing-item-side .record-menu { position: absolute; right: 8px; top: 8px; }
