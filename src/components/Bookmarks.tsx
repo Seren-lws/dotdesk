@@ -22,6 +22,18 @@ function categoryColor(category: string) {
   return categoryColors[value % categoryColors.length]
 }
 
+function normalizeCategory(value: string) {
+  const raw = value.trim()
+  const known: Record<string, string> = {
+    tools: 'tools', '工具': 'tools',
+    design: 'design', '设计': 'design',
+    ai: 'ai',
+    docs: 'docs', '文档': 'docs',
+    other: 'other', '其他': 'other',
+  }
+  return known[raw.toLowerCase()] || raw || 'other'
+}
+
 function normalizeUrl(value: string) {
   const raw = value.trim()
   if (!raw) return null
@@ -43,6 +55,7 @@ export default function Bookmarks() {
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [tag, setTag] = useState('')
+  const [icon, setIcon] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -64,6 +77,7 @@ export default function Bookmarks() {
     setName('')
     setUrl('')
     setTag('')
+    setIcon('')
     setEditingId(null)
     setShowForm(false)
     setMessage('')
@@ -73,6 +87,7 @@ export default function Bookmarks() {
     setName(bookmark.name)
     setUrl(bookmark.url)
     setTag(categoryLabel(bookmark.category))
+    setIcon(bookmark.icon ? getIconEmoji(bookmark.icon) : '')
     setEditingId(bookmark.id)
     setShowForm(true)
     setMessage('')
@@ -91,8 +106,8 @@ export default function Bookmarks() {
     const values = {
       name: name.trim(),
       url: normalizedUrl,
-      category: tag.trim() || 'other',
-      icon: existing?.icon || null,
+      category: normalizeCategory(tag),
+      icon: icon.trim() || null,
       sort_order: existing?.sort_order ?? bookmarks.length,
     }
     const { error } = editingId
@@ -130,9 +145,15 @@ export default function Bookmarks() {
       {showForm && (
         <div className="bookmark-form">
           <div className="bookmark-form-grid">
-            <input className="idea-input" placeholder="网站名称" value={name} onChange={(event) => setName(event.target.value)} />
-            <input className="idea-input" placeholder="网址，例如 github.com" value={url} onChange={(event) => setUrl(event.target.value)} />
-            <input className="idea-input" placeholder="自定义标签，例如：写作" value={tag} onChange={(event) => setTag(event.target.value)} />
+            <label className="bookmark-form-field">网站名称<input className="idea-input" placeholder="例如：小红书" value={name} onChange={(event) => setName(event.target.value)} /></label>
+            <label className="bookmark-form-field">网址<input className="idea-input" placeholder="例如：xiaohongshu.com" value={url} onChange={(event) => setUrl(event.target.value)} /></label>
+            <div className="bookmark-form-meta">
+              <label className="bookmark-form-field bookmark-emoji-field">Emoji<input className="idea-input" placeholder="🌿" value={icon} onChange={(event) => setIcon(event.target.value)} maxLength={8} /></label>
+              <label className="bookmark-form-field">分类<input className="idea-input" list="bookmark-category-options" placeholder="工具 / 写作 / 娱乐…" value={tag} onChange={(event) => setTag(event.target.value)} /></label>
+            </div>
+            <datalist id="bookmark-category-options">
+              {[...new Set(['工具', 'AI', '设计', '文档', '其他', ...categories.map(categoryLabel)])].map((category) => <option key={category} value={category} />)}
+            </datalist>
           </div>
           <button className="idea-submit bookmark-submit" onClick={handleSave} disabled={saving || !name.trim() || !url.trim()}>
             {saving ? '保存中…' : editingId ? '保存修改' : '加入收藏夹'}
@@ -187,5 +208,5 @@ function getIconEmoji(icon: string): string {
     layout: '📋',
     notebook: '📓',
   }
-  return map[icon] || '🔗'
+  return map[icon] || icon || '🔗'
 }
