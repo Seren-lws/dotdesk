@@ -618,6 +618,306 @@ body {
   .bookmark-list { grid-template-columns: 1fr; }
 }
 
+/* ===== Daily tools: bookmark notes + open journal ===== */
+.daily-tools-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(520px, 1fr);
+  gap: 22px;
+  align-items: stretch;
+  margin-bottom: 3rem;
+}
+
+.daily-tools-row > .section {
+  min-width: 0;
+  height: 100%;
+  margin-bottom: 0;
+}
+
+.daily-log-panel {
+  position: relative;
+  padding: 18px 18px 22px;
+  border: 3px solid #9e8d9f;
+  background-color: #c5b6c6;
+  background-image:
+    linear-gradient(135deg, rgba(255,255,255,.28), transparent 35%),
+    repeating-linear-gradient(90deg, transparent 0 21px, rgba(93, 76, 96, .035) 22px 23px);
+  box-shadow: inset 0 0 0 3px #ded2df, 5px 5px 0 #a99dab;
+}
+
+.daily-log-cover {
+  position: absolute;
+  top: 11px;
+  right: 15px;
+  width: 46px;
+  height: 13px;
+  border: 1.5px solid #8c7a8d;
+  background: #d8cad9;
+  box-shadow: 2px 2px 0 #9b899c;
+  transform: rotate(2deg);
+}
+
+.daily-log-cover::before {
+  content: 'NO. 365';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #766777;
+  font-family: var(--font-pixel);
+  font-size: 6px;
+}
+
+.daily-log-title {
+  position: relative;
+  z-index: 1;
+  margin: 0 55px 13px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #8d7b8e;
+  color: #574b59;
+}
+
+.daily-log-title::after {
+  content: '✎';
+  margin-left: auto;
+  color: #776779;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  transform: rotate(-16deg);
+}
+
+.daily-log-icon {
+  border-color: #8d7b8e;
+  color: #655568;
+  background: #e4dbe5;
+  box-shadow: inset 0 0 0 2px #cbbdcd;
+}
+
+.daily-log-book {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 500px;
+  border: 5px solid #817183;
+  border-radius: 4px 7px 7px 4px;
+  background: #8e7b90;
+  box-shadow: 4px 5px 0 #9b8b9d;
+}
+
+.daily-log-book::before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 12px;
+  background: linear-gradient(90deg, rgba(80,63,82,.22), rgba(255,255,255,.3) 48%, rgba(80,63,82,.2));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.daily-log-page {
+  position: relative;
+  min-width: 0;
+  padding: 17px 16px 15px;
+  background-color: #fbf6e9;
+  background-image: repeating-linear-gradient(0deg, transparent 0 25px, rgba(128, 112, 92, .075) 26px 27px);
+  box-shadow: inset 0 0 18px rgba(105, 91, 77, .08);
+}
+
+.daily-log-index-page {
+  border-radius: 0 2px 2px 0;
+  box-shadow: inset -8px 0 13px rgba(91, 73, 91, .1);
+}
+
+.daily-log-writing-page {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #c9bda9;
+  border-radius: 2px 5px 5px 2px;
+  box-shadow: inset 8px 0 13px rgba(91, 73, 91, .09);
+}
+
+.daily-log-month-head {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 11px;
+}
+
+.daily-log-month-head strong {
+  color: #655868;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  text-align: center;
+}
+
+.daily-log-month-head button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1.5px solid #a59698;
+  background: rgba(255,255,255,.35);
+  color: #746678;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.daily-log-weekdays,
+.daily-log-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.daily-log-weekdays { margin-bottom: 4px; }
+.daily-log-weekdays span { color: #9b8e85; font-size: 8px; text-align: center; }
+
+.daily-log-day {
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,.22);
+  color: #7e726d;
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  cursor: pointer;
+}
+
+.daily-log-day:hover { border-color: #ad9aa7; background: #f2e8e6; }
+.daily-log-day.today { box-shadow: inset 0 0 0 1px #b19a78; color: #796347; }
+.daily-log-day.selected { border-color: #8e7b90; background: #e6d9e3; color: #5f5062; }
+.daily-log-day.empty { background: transparent; }
+.daily-log-day i { position: absolute; left: 50%; bottom: 3px; width: 3px; height: 3px; border-radius: 50%; background: #9d7887; transform: translateX(-50%); }
+
+.daily-log-month-list {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 2px dashed #c2b6a4;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.daily-log-month-list > p {
+  display: flex;
+  justify-content: space-between;
+  color: #766a6f;
+  font-size: 9px;
+}
+
+.daily-log-month-list > p b { font-family: var(--font-pixel); font-size: 7px; }
+.daily-log-month-list > small { padding: 10px 3px; color: var(--text-muted); font-size: 9px; }
+
+.daily-log-month-list button {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 4px;
+  border: 0;
+  border-bottom: 1px dotted #c7baa8;
+  background: transparent;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 7px;
+  color: #746a68;
+  text-align: left;
+  cursor: pointer;
+}
+
+.daily-log-month-list button:hover { background: rgba(216, 201, 211, .24); }
+.daily-log-month-list button strong { font-family: var(--font-pixel); font-size: 7px; }
+.daily-log-month-list button span { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+
+.daily-log-date-line {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px double #b6a99a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.daily-log-date-line span { color: #a1838e; font-family: var(--font-pixel); font-size: 7px; letter-spacing: .12em; }
+.daily-log-date-line strong { color: #645a58; font-size: 12px; font-weight: 500; }
+
+.daily-log-textarea {
+  width: 100%;
+  flex: 1;
+  min-height: 270px;
+  padding: 2px 5px 8px;
+  resize: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #5e5653;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 27px;
+}
+
+.daily-log-textarea::placeholder { color: #aaa099; font-style: italic; }
+
+.daily-log-actions {
+  min-height: 30px;
+  padding-top: 8px;
+  border-top: 1px dashed #bdb09f;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.daily-log-actions > span { margin-right: auto; color: #9c918b; font-size: 8px; }
+.daily-log-actions button { padding: 5px 7px; font-family: var(--font-pixel); font-size: 7px; cursor: pointer; }
+.daily-log-delete { border: 0; background: transparent; color: #9c7777; }
+.daily-log-save { border: 1.5px solid #8e7b90; background: #dfd1dd; color: #655568; box-shadow: 2px 2px 0 #a795a8; }
+.daily-log-save:disabled { opacity: .45; cursor: default; }
+
+.daily-log-message { min-height: 17px; padding-top: 5px; color: #72836f; font-size: 8px; text-align: right; }
+.daily-log-message.error { color: #a36f72; }
+
+.daily-log-turners {
+  margin-top: auto;
+  padding-top: 9px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.daily-log-turners button {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #776a77;
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  cursor: pointer;
+}
+
+.daily-log-turners button:first-child { text-align: left; }
+.daily-log-turners button:last-child { text-align: right; }
+.daily-log-turners button:hover { color: #4f4352; }
+.daily-log-turners button span { font-size: 13px; vertical-align: -1px; }
+.daily-log-turners i { color: #b29582; font-style: normal; font-size: 10px; }
+
+@media (max-width: 1180px) {
+  .daily-tools-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .daily-log-panel { padding: 14px 11px 17px; }
+  .daily-log-book { grid-template-columns: 1fr; }
+  .daily-log-book::before { display: none; }
+  .daily-log-page { min-height: 440px; }
+  .daily-log-writing-page { border-top: 5px solid #817183; border-left: 0; }
+  .daily-log-title .module-kicker { display: none; }
+}
+
 .pixel-pill.cat-tools {
   border-color: #97aa90;
   color: #53694f;

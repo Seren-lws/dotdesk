@@ -4,6 +4,7 @@ import ProjectShowcase from './components/ProjectShowcase'
 import IdeaBook from './components/IdeaBook'
 import MiniCalendar from './components/MiniCalendar'
 import Bookmarks from './components/Bookmarks'
+import DailyLog from './components/DailyLog'
 import JobOverview from './components/JobOverview'
 import HealthTracker from './components/HealthTracker'
 import SleepLog from './components/SleepLog'
@@ -45,7 +46,10 @@ export default function App() {
           </div>
         </div>
 
-        <Bookmarks />
+        <div className="daily-tools-row">
+          <Bookmarks />
+          <DailyLog />
+        </div>
 
         <JobOverview />
 
