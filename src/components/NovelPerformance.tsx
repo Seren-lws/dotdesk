@@ -427,20 +427,25 @@ export default function NovelPerformance() {
       )}
 
       {income.length > 0 && (
-        <div className="novel-history novel-income-history">
-          <p className="novel-history-title">最近收入记录</p>
-          {[...income].reverse().slice(0, 5).map((entry) => (
-            <div key={entry.id} className="novel-history-row">
-              <strong>{entry.record_date.slice(5)}</strong>
-              <span>累计 {formatNumber(entry.total_po)} PO 币</span>
-              <small>{entry.notes || '没有备注'}</small>
-              <div className="novel-history-actions">
-                <button type="button" onClick={() => openIncomeForm(entry)}>编辑</button>
-                <button type="button" onClick={() => deleteIncome(entry)}>删除</button>
+        <details className="novel-income-history">
+          <summary className="novel-history-title">
+            <span>最近收入记录</span>
+            <small>{Math.min(income.length, 5)} 条</small>
+          </summary>
+          <div className="novel-income-history-list">
+            {[...income].reverse().slice(0, 5).map((entry) => (
+              <div key={entry.id} className="novel-history-row">
+                <strong>{entry.record_date.slice(5)}</strong>
+                <span>累计 {formatNumber(entry.total_po)} PO 币</span>
+                <small>{entry.notes || '没有备注'}</small>
+                <div className="novel-history-actions">
+                  <button type="button" onClick={() => openIncomeForm(entry)}>编辑</button>
+                  <button type="button" onClick={() => deleteIncome(entry)}>删除</button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </details>
       )}
 
       {showStatForm && selectedNovelId && (

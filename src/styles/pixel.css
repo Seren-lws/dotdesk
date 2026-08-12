@@ -2579,6 +2579,12 @@ body {
 .novel-history-actions button { padding: 3px 5px; border: 1px solid #c5a1aa; background: #fff9f7; color: #856570; font-size: 9px; cursor: pointer; }
 .novel-history-actions button:hover { border-color: #9f7481; color: #664b55; }
 .novel-income-history { margin: 0 0 12px; padding: 9px; border: 1.5px dashed #c9a6af; background: rgba(250, 237, 240, .55); }
+.novel-income-history > summary { display: flex; align-items: center; gap: 8px; list-style: none; cursor: pointer; }
+.novel-income-history > summary::-webkit-details-marker { display: none; }
+.novel-income-history > summary small { color: #a1848c; font-family: var(--font-body); font-size: 9px; font-weight: 400; }
+.novel-income-history > summary::after { content: '展开 ▾'; margin-left: auto; color: #856570; font-family: var(--font-body); font-size: 10px; }
+.novel-income-history[open] > summary::after { content: '收起 ▴'; }
+.novel-income-history-list { margin-top: 9px; display: flex; flex-direction: column; gap: 5px; }
 .novel-empty { min-height: 220px; display: grid; place-items: center; align-content: center; gap: 10px; color: var(--text-muted); }
 .novel-empty span { color: #a77d89; font-family: var(--font-pixel); font-size: 34px; }
 .novel-empty p { font-size: 11px; }
