@@ -87,8 +87,10 @@ export default function NovelPerformance() {
   const [editingNovelId, setEditingNovelId] = useState<string | null>(null)
   const [showStatForm, setShowStatForm] = useState(false)
   const [statForm, setStatForm] = useState(emptyStatForm)
+  const [editingStatId, setEditingStatId] = useState<string | null>(null)
   const [showIncomeForm, setShowIncomeForm] = useState(false)
   const [incomeForm, setIncomeForm] = useState(emptyIncomeForm)
+  const [editingIncomeId, setEditingIncomeId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
@@ -236,8 +238,16 @@ export default function NovelPerformance() {
       subscriptions: String(entry.subscriptions),
       notes: entry.notes || '',
     } : emptyStatForm)
+    setEditingStatId(entry?.id || null)
     setShowStatForm(true)
     setMessage('')
+    if (entry) window.setTimeout(() => document.querySelector('#novel-stat-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0)
+  }
+
+  const closeStatForm = () => {
+    setShowStatForm(false)
+    setEditingStatId(null)
+    setStatForm(emptyStatForm)
   }
 
   const saveStat = async () => {
@@ -255,14 +265,15 @@ export default function NovelPerformance() {
       notes: statForm.notes.trim() || null,
       updated_at: new Date().toISOString(),
     }
-    const existing = stats.find((item) => item.record_date === statForm.date)
+    const existing = editingStatId
+      ? stats.find((item) => item.id === editingStatId)
+      : stats.find((item) => item.record_date === statForm.date)
     const { error } = existing
       ? await supabase.from('dd_novel_daily_stats').update(values).eq('id', existing.id)
       : await supabase.from('dd_novel_daily_stats').insert(values)
     if (error) setMessage('成绩保存失败，刚才填写的内容还在。')
     else {
-      setShowStatForm(false)
-      setStatForm(emptyStatForm)
+      closeStatForm()
       fetchStats(selectedNovelId)
     }
     setSaving(false)
@@ -272,7 +283,10 @@ export default function NovelPerformance() {
     if (!window.confirm(`确定删除 ${entry.record_date} 的成绩吗？`)) return
     const { error } = await supabase.from('dd_novel_daily_stats').delete().eq('id', entry.id)
     if (error) setMessage('删除成绩失败，请稍后再试。')
-    else fetchStats(selectedNovelId)
+    else {
+      if (editingStatId === entry.id) closeStatForm()
+      fetchStats(selectedNovelId)
+    }
   }
 
   const openIncomeForm = (entry?: NovelIncome) => {
@@ -281,8 +295,16 @@ export default function NovelPerformance() {
       totalPo: String(entry.total_po),
       notes: entry.notes || '',
     } : emptyIncomeForm)
+    setEditingIncomeId(entry?.id || null)
     setShowIncomeForm(true)
     setMessage('')
+    if (entry) window.setTimeout(() => document.querySelector('#novel-income-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0)
+  }
+
+  const closeIncomeForm = () => {
+    setShowIncomeForm(false)
+    setEditingIncomeId(null)
+    setIncomeForm(emptyIncomeForm)
   }
 
   const saveIncome = async () => {
@@ -295,14 +317,15 @@ export default function NovelPerformance() {
       notes: incomeForm.notes.trim() || null,
       updated_at: new Date().toISOString(),
     }
-    const existing = income.find((item) => item.record_date === incomeForm.date)
+    const existing = editingIncomeId
+      ? income.find((item) => item.id === editingIncomeId)
+      : income.find((item) => item.record_date === incomeForm.date)
     const { error } = existing
       ? await supabase.from('dd_novel_account_income').update(values).eq('id', existing.id)
       : await supabase.from('dd_novel_account_income').insert(values)
     if (error) setMessage('收入保存失败，刚才填写的内容还在。')
     else {
-      setShowIncomeForm(false)
-      setIncomeForm(emptyIncomeForm)
+      closeIncomeForm()
       fetchIncome()
     }
     setSaving(false)
@@ -312,7 +335,10 @@ export default function NovelPerformance() {
     if (!window.confirm(`确定删除 ${entry.record_date} 的收入记录吗？`)) return
     const { error } = await supabase.from('dd_novel_account_income').delete().eq('id', entry.id)
     if (error) setMessage('删除收入失败，请稍后再试。')
-    else fetchIncome()
+    else {
+      if (editingIncomeId === entry.id) closeIncomeForm()
+      fetchIncome()
+    }
   }
 
   return (
@@ -326,7 +352,7 @@ export default function NovelPerformance() {
         <span className="section-icon novel-icon">N</span>
         小说成绩
         <span className="module-kicker">STORY SCOREBOARD</span>
-        <button className="add-btn" onClick={() => showStatForm ? setShowStatForm(false) : openStatForm()} aria-label="记录今日小说成绩" disabled={!selectedNovelId}>
+        <button className="add-btn" onClick={() => showStatForm ? closeStatForm() : openStatForm()} aria-label="记录今日小说成绩" disabled={!selectedNovelId}>
           {showStatForm ? '×' : '+'}
         </button>
       </h2>
@@ -379,29 +405,46 @@ export default function NovelPerformance() {
           <span>近{range}天</span>
           <b>{rangeIncomeGain === undefined ? '暂无对比' : `${rangeIncomeGain >= 0 ? '+' : ''}${formatNumber(rangeIncomeGain)}`}</b>
         </div>
-        <button type="button" className="novel-income-btn" onClick={() => showIncomeForm ? setShowIncomeForm(false) : openIncomeForm()}>
+        <button type="button" className="novel-income-btn" onClick={() => showIncomeForm ? closeIncomeForm() : openIncomeForm()}>
           {showIncomeForm ? '收起' : '记录收入'}
         </button>
       </div>
 
       {showIncomeForm && (
-        <div className="record-form novel-record-form">
+        <div id="novel-income-form" className="record-form novel-record-form">
           <div className="novel-form-grid income-form-grid">
             <label>日期<input type="date" className="idea-input" value={incomeForm.date} onChange={(event) => setIncomeForm({ ...incomeForm, date: event.target.value })} /></label>
             <label>累计 PO 币<input type="number" min="0" step="1" className="idea-input" value={incomeForm.totalPo} onChange={(event) => setIncomeForm({ ...incomeForm, totalPo: event.target.value })} /></label>
             <label className="novel-note-field">备注<input className="idea-input" value={incomeForm.notes} onChange={(event) => setIncomeForm({ ...incomeForm, notes: event.target.value })} placeholder="例如：本月稿费结算" /></label>
           </div>
           <div className="record-form-actions">
-            {income.find((item) => item.record_date === incomeForm.date) && (
-              <button type="button" className="record-delete-btn" onClick={() => deleteIncome(income.find((item) => item.record_date === incomeForm.date)!)}>删除当天</button>
+            {(editingIncomeId ? income.find((item) => item.id === editingIncomeId) : income.find((item) => item.record_date === incomeForm.date)) && (
+              <button type="button" className="record-delete-btn" onClick={() => deleteIncome((editingIncomeId ? income.find((item) => item.id === editingIncomeId) : income.find((item) => item.record_date === incomeForm.date))!)}>删除这条</button>
             )}
-            <button type="button" className="idea-submit novel-submit" onClick={saveIncome} disabled={saving || !incomeForm.totalPo}>{saving ? '保存中…' : '保存收入'}</button>
+            <button type="button" className="idea-submit novel-submit" onClick={saveIncome} disabled={saving || !incomeForm.totalPo}>{saving ? '保存中…' : editingIncomeId ? '保存修改' : '保存收入'}</button>
           </div>
         </div>
       )}
 
+      {income.length > 0 && (
+        <div className="novel-history novel-income-history">
+          <p className="novel-history-title">最近收入记录</p>
+          {[...income].reverse().slice(0, 5).map((entry) => (
+            <div key={entry.id} className="novel-history-row">
+              <strong>{entry.record_date.slice(5)}</strong>
+              <span>累计 {formatNumber(entry.total_po)} PO 币</span>
+              <small>{entry.notes || '没有备注'}</small>
+              <div className="novel-history-actions">
+                <button type="button" onClick={() => openIncomeForm(entry)}>编辑</button>
+                <button type="button" onClick={() => deleteIncome(entry)}>删除</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {showStatForm && selectedNovelId && (
-        <div className="record-form novel-record-form">
+        <div id="novel-stat-form" className="record-form novel-record-form">
           <div className="novel-form-grid">
             <label>日期<input type="date" className="idea-input" value={statForm.date} onChange={(event) => setStatForm({ ...statForm, date: event.target.value })} /></label>
             <label>人气值<input type="number" min="0" step="1" className="idea-input" value={statForm.popularity} onChange={(event) => setStatForm({ ...statForm, popularity: event.target.value })} /></label>
@@ -412,10 +455,10 @@ export default function NovelPerformance() {
             <label className="novel-note-field">备注<input className="idea-input" value={statForm.notes} onChange={(event) => setStatForm({ ...statForm, notes: event.target.value })} placeholder="例如：今天更新了新章节" /></label>
           </div>
           <div className="record-form-actions">
-            {stats.find((item) => item.record_date === statForm.date) && (
-              <button type="button" className="record-delete-btn" onClick={() => deleteStat(stats.find((item) => item.record_date === statForm.date)!)}>删除当天</button>
+            {(editingStatId ? stats.find((item) => item.id === editingStatId) : stats.find((item) => item.record_date === statForm.date)) && (
+              <button type="button" className="record-delete-btn" onClick={() => deleteStat((editingStatId ? stats.find((item) => item.id === editingStatId) : stats.find((item) => item.record_date === statForm.date))!)}>删除这条</button>
             )}
-            <button type="button" className="idea-submit novel-submit" onClick={saveStat} disabled={saving}>{saving ? '保存中…' : '保存成绩'}</button>
+            <button type="button" className="idea-submit novel-submit" onClick={saveStat} disabled={saving}>{saving ? '保存中…' : editingStatId ? '保存修改' : '保存成绩'}</button>
           </div>
         </div>
       )}
@@ -478,11 +521,15 @@ export default function NovelPerformance() {
           <div className="novel-history">
             <p className="novel-history-title">最近记录</p>
             {[...visibleStats].reverse().slice(0, 5).map((entry) => (
-              <button type="button" key={entry.id} className="novel-history-row" onClick={() => openStatForm(entry)}>
+              <div key={entry.id} className="novel-history-row">
                 <strong>{entry.record_date.slice(5)}</strong>
                 <span>人气 {formatNumber(entry.popularity)} · 收藏 {formatNumber(entry.favorites)} · 珠珠 {formatNumber(entry.pearls)} · 评论 {formatNumber(entry.comments)} · 订阅 {formatNumber(entry.subscriptions)}</span>
-                <small>{entry.notes || '点击编辑'}</small>
-              </button>
+                <small>{entry.notes || '没有备注'}</small>
+                <div className="novel-history-actions">
+                  <button type="button" onClick={() => openStatForm(entry)}>编辑</button>
+                  <button type="button" onClick={() => deleteStat(entry)}>删除</button>
+                </div>
+              </div>
             ))}
           </div>
         </>
