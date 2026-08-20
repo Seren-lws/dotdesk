@@ -122,6 +122,21 @@ function htmlPage(content: string, status = 200, extraHeaders: HeadersInit = {})
   );
 }
 
+function authorizationCompletePage(redirectTo: string): Response {
+  const nonce = crypto.randomUUID().replaceAll("-", "");
+  const safeRedirectForScript = JSON.stringify(redirectTo).replaceAll("<", "\\u003c");
+  const headers = securityHeaders({ "Content-Type": "text/html; charset=utf-8" });
+  headers.set(
+    "Content-Security-Policy",
+    `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'`
+  );
+
+  return new Response(
+    `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dotdesk MCP 授权成功</title><style>body{margin:0;background:#f5f0e7;color:#4b443d;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}main{width:min(520px,calc(100% - 40px));margin:10vh auto;border:2px solid #aaa39a;box-shadow:6px 6px 0 #d5cec3;background:#fffdf8;padding:28px;box-sizing:border-box}h1{letter-spacing:.12em;font-size:22px}p{line-height:1.7;color:#70675f}.success{padding:14px;background:#eef3ea;border-left:4px solid #9aaf92;margin:18px 0}a{display:inline-block;margin-top:12px;padding:10px 18px;border:2px solid #726a63;background:#e9dfe5;color:#403a36;text-decoration:none}.small{font-size:12px;color:#91877e}</style></head><body><main><h1>授权成功</h1><div class="success">Dotdesk 已允许 ChatGPT 只读连接。</div><p>正在返回 ChatGPT……</p><a href="${escapeHtml(redirectTo)}">如果没有自动返回，点这里</a><p class="small">这个页面可以在连接完成后关闭。</p></main><script nonce="${nonce}">window.location.replace(${safeRedirectForScript});</script></body></html>`,
+    { status: 200, headers }
+  );
+}
+
 async function handleAuthorizeGet(request: Request, env: Env): Promise<Response> {
   const authRequest = await env.OAUTH_PROVIDER.parseAuthRequest(request);
   const client = await env.OAUTH_PROVIDER.lookupClient(authRequest.clientId);
@@ -166,12 +181,7 @@ async function handleAuthorizePost(request: Request, env: Env): Promise<Response
     props: { owner: "wansheng", access: "read-only" }
   });
 
-  return new Response(null, {
-    status: 302,
-    headers: securityHeaders({
-      Location: redirectTo
-    })
-  });
+  return authorizationCompletePage(redirectTo);
 }
 
 async function handleEveringSnapshot(request: Request, env: Env): Promise<Response> {
