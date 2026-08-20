@@ -54,6 +54,52 @@ async function safeEqual(left: string, right: string): Promise<boolean> {
   return difference === 0;
 }
 
+function base64Url(bytes: ArrayBuffer): string {
+  let binary = "";
+  for (const byte of new Uint8Array(bytes)) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+}
+
+async function signAuthorizationState(state: string, secret: string): Promise<string> {
+  const issuedAt = Date.now().toString();
+  return signAuthorizationStateAt(state, secret, issuedAt);
+}
+
+async function verifyAuthorizationState(
+  token: string,
+  state: string,
+  secret: string
+): Promise<boolean> {
+  const separator = token.indexOf(".");
+  if (separator < 1 || !secret) return false;
+  const issuedAt = Number(token.slice(0, separator));
+  if (!Number.isFinite(issuedAt)) return false;
+  const age = Date.now() - issuedAt;
+  if (age < -60_000 || age > 600_000) return false;
+  const expected = await signAuthorizationStateAt(state, secret, String(issuedAt));
+  return safeEqual(token, expected);
+}
+
+async function signAuthorizationStateAt(
+  state: string,
+  secret: string,
+  issuedAt: string
+): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`${issuedAt}.${state}`)
+  );
+  return `${issuedAt}.${base64Url(signature)}`;
+}
+
 function securityHeaders(extra: HeadersInit = {}): Headers {
   const headers = new Headers(extra);
   headers.set(
@@ -76,30 +122,19 @@ function htmlPage(content: string, status = 200, extraHeaders: HeadersInit = {})
   );
 }
 
-function readCookie(request: Request, name: string): string | null {
-  const cookie = request.headers.get("Cookie") ?? "";
-  for (const part of cookie.split(";")) {
-    const [key, ...rest] = part.trim().split("=");
-    if (key === name) return rest.join("=");
-  }
-  return null;
-}
-
 async function handleAuthorizeGet(request: Request, env: Env): Promise<Response> {
   const authRequest = await env.OAUTH_PROVIDER.parseAuthRequest(request);
   const client = await env.OAUTH_PROVIDER.lookupClient(authRequest.clientId);
   if (!client) return htmlPage("<h1>连接请求无效</h1>", 400);
 
-  const csrfToken = crypto.randomUUID();
+  const encodedState = encodeState(authRequest);
+  const authorizationToken = await signAuthorizationState(encodedState, env.MCP_ACCESS_CODE);
   const clientName = escapeHtml(client.clientName ?? "未知 MCP 客户端");
   const scopes = authRequest.scope.length ? escapeHtml(authRequest.scope.join(", ")) : "只读状态";
 
   return htmlPage(
-    `<h1>DOTDESK MCP</h1><p>正在把晚声的私人工作台连接给 AI。这里只授权读取，不会修改、添加或删除任何记录。</p><div class="client"><strong>${clientName}</strong><br><span class="small">权限：${scopes}</span></div><form method="post" action="/authorize"><input type="hidden" name="state" value="${escapeHtml(encodeState(authRequest))}"><input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}"><label for="access_code">私人连接码</label><input id="access_code" name="access_code" type="password" autocomplete="current-password" required autofocus><button type="submit">允许只读连接</button></form><p class="small">连接码只在这次授权时验证，不会交给 GPT 或 Claude。</p>`,
-    200,
-    {
-      "Set-Cookie": `__Host-dotdesk_csrf=${csrfToken}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=600`
-    }
+    `<h1>DOTDESK MCP</h1><p>正在把晚声的私人工作台连接给 AI。这里只授权读取，不会修改、添加或删除任何记录。</p><div class="client"><strong>${clientName}</strong><br><span class="small">权限：${scopes}</span></div><form method="post" action="/authorize"><input type="hidden" name="state" value="${escapeHtml(encodedState)}"><input type="hidden" name="authorization_token" value="${escapeHtml(authorizationToken)}"><label for="access_code">私人连接码</label><input id="access_code" name="access_code" type="password" autocomplete="current-password" required autofocus><button type="submit">允许只读连接</button></form><p class="small">连接码只在这次授权时验证，不会交给 GPT 或 Claude。</p>`,
+    200
   );
 }
 
@@ -107,10 +142,9 @@ async function handleAuthorizePost(request: Request, env: Env): Promise<Response
   const form = await request.formData();
   const state = String(form.get("state") ?? "");
   const accessCode = String(form.get("access_code") ?? "");
-  const csrfFromForm = String(form.get("csrf_token") ?? "");
-  const csrfFromCookie = readCookie(request, "__Host-dotdesk_csrf") ?? "";
+  const authorizationToken = String(form.get("authorization_token") ?? "");
 
-  if (!csrfFromForm || !(await safeEqual(csrfFromForm, csrfFromCookie))) {
+  if (!(await verifyAuthorizationState(authorizationToken, state, env.MCP_ACCESS_CODE))) {
     return htmlPage("<h1>授权页面已过期</h1><p>请返回客户端重新发起连接。</p>", 400);
   }
   if (!env.MCP_ACCESS_CODE || !(await safeEqual(accessCode, env.MCP_ACCESS_CODE))) {
@@ -135,8 +169,7 @@ async function handleAuthorizePost(request: Request, env: Env): Promise<Response
   return new Response(null, {
     status: 302,
     headers: securityHeaders({
-      Location: redirectTo,
-      "Set-Cookie": "__Host-dotdesk_csrf=; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=0"
+      Location: redirectTo
     })
   });
 }
