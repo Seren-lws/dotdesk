@@ -9,6 +9,10 @@ lerna-debug.log*
 
 .env
 .env.*
+**/.dev.vars
+**/.npm-cache/
+**/dist-worker/
+**/.wrangler/
 !.env.example
 node_modules
 dist
